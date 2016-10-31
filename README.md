@@ -11,9 +11,9 @@ Add famous painting styles to any photo in a fraction of a second! [You can even
 It takes 100ms on a 2015 Titan X to style the MIT Stata Center (1024×680) like Udnie, by Francis Picabia.
 </p>
 
-Our implementation is based off of a combination of Gatys' [A Neural Algorithm of Artistic Style](https://arxiv.org/abs/1508.06576), Johnson's [Perceptual Losses for Real-Time Style Transfer and Super-Resolution](http://cs.stanford.edu/people/jcjohns/eccv16/), and Ulyanov's [Instance Normalization](https://arxiv.org/abs/1607.08022). 
+Our implementation is based off of a combination of Gatys' [A Neural Algorithm of Artistic Style](https://arxiv.org/abs/1508.06576), Johnson's [Perceptual Losses for Real-Time Style Transfer and Super-Resolution](http://cs.stanford.edu/people/jcjohns/eccv16/), and Ulyanov's [Instance Normalization](https://arxiv.org/abs/1607.08022).
 
-## Video Stylization 
+## Video Stylization
 Here we transformed every frame in a video, then combined the results. [Click to go to the full demo on YouTube!](https://www.youtube.com/watch?v=xVJwwWQlQ1o) The style here is Udnie, as above.
 <div align = 'center'>
      <a href = 'https://www.youtube.com/watch?v=xVJwwWQlQ1o'>
@@ -28,7 +28,7 @@ We added styles from various paintings to a photo of Chicago. Click on thumbnail
 <div align='center'>
 <img src = 'examples/content/chicago.jpg' height="200px">
 </div>
-     
+
 <div align = 'center'>
 <a href = 'examples/style/wave.jpg'><img src = 'examples/thumbs/wave.jpg' height = '200px'></a>
 <img src = 'examples/results/chicago_wave.jpg' height = '200px'>
@@ -66,7 +66,7 @@ Use `style.py` to train a new style transfer network. Run `python style.py` to v
 Use `evaluate.py` to evaluate a style transfer network. Run `python evaluate.py` to view all the possible parameters. Evaluation takes 100 ms per frame (when batch size is 1) on a Maxwell Titan X. [More detailed documentation here](docs.md#evaluate). Takes several seconds per frame on a CPU. **Models for evaluation are [located here](https://drive.google.com/drive/folders/0B9jhaT37ydSyRk9UX0wwX3BpMzQ?usp=sharing)**. Example usage:
 
     python evaluate.py --checkpoint scream.ckpt \
-      --in-path examples/thumb/ \
+      --in-path examples/thumbs/ \
       --out-path examples/results/
 
 ### Stylizing Video
@@ -87,12 +87,18 @@ You will need the following to run the above:
   - All the required NVIDIA software to run TF on a GPU (cuda, etc)
 - ffmpeg if you want to stylize video
 
+You can use `pip` to install Python dependencies:
+
+```
+$ pip install -r requirements.txt
+```
+
+
 ### Attributions/Thanks
-- This project could not have happened without the advice (and GPU access) given by [Anish Athalye](http://www.anishathalye.com/). 
+- This project could not have happened without the advice (and GPU access) given by [Anish Athalye](http://www.anishathalye.com/).
   - The project also borrowed some code from Anish's [Neural Style](https://github.com/anishathalye/neural-style/)
 - Some readme/docs formatting was borrowed from Justin Johnson's [Fast Neural Style](https://github.com/jcjohnson/fast-neural-style)
 - The image of the Stata Center at the very beginning of the README was taken by [Juan Paulo](https://juanpaulo.me/)
 
 ### License
 Copyright (c) 2016 Logan Engstrom. Contact me for commercial use (email: engstrom at my university's domain dot edu). Free for research/noncommercial use, as long as proper attribution is given and this copyright notice is retained.
-
