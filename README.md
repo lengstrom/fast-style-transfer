@@ -21,7 +21,7 @@ Here we transformed every frame in a video, then combined the results. [Click to
      </a>
 </div>
 
-See how to generate these videos [here](stylizing-video)!
+See how to generate these videos [here](#stylizing-video)!
 
 ## Image Stylization
 We added styles from various paintings to a photo of Chicago. Click on thumbnails to see full applied style images.
