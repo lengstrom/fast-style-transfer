@@ -72,7 +72,7 @@ Use `evaluate.py` to evaluate a style transfer network. Run `python evaluate.py`
 ### Stylizing Video
 Use `transform_video.py` to transfer style into a video. Run `python transform_video.py` to view all the possible parameters. Requires `ffmpeg`. [More detailed documentation here](docs.md#video). Example usage:
 
-    python transform_video.py --in_path shibe.mp4 \
+    python transform_video.py --in-path shibe.mp4 \
       --checkpoint saver \
       --out-path shibe_la_muse.mp4 \
       --device /gpu:0 \
