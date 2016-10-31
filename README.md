@@ -97,5 +97,5 @@ You will need the following to run the above:
 - The image of the Stata Center at the very beginning of the README was taken by [Juan Paulo](https://juanpaulo.me/)
 
 ### License
-GPLv3 for Free/Research use. Contact me (engstrom at my university's domain dot edu) for commercial use.
+Copyright (c) 2016 Logan Engstrom. Contact me for commercial use (email: engstrom at my university's domain dot edu). Free for research/noncommercial use, as long as proper attribution is given and this copyright notice is retained.
 
