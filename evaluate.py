@@ -5,6 +5,7 @@ import scipy.misc
 import tensorflow as tf
 from utils import save_img, get_img, exists, list_files
 from argparse import ArgumentParser
+from collections import defaultdict
 import time
 
 BATCH_SIZE = 4
@@ -51,7 +52,7 @@ def ffwd(data_in, paths_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):
                 X = np.zeros(batch_shape, dtype=np.float32)
                 for j, path_in in enumerate(curr_batch_in):
                     img = get_img(path_in)
-                    assert img.shape == img_shape
+                    assert img.shape == img_shape, 'Images have different dimensions. Resize images or use --allow_different_dimensions.'
                     X[j] = img
             else:
                 X = data_in[pos:pos+batch_size]
@@ -68,6 +69,19 @@ def ffwd(data_in, paths_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):
 def ffwd_to_img(in_path, out_path, checkpoint_dir, device='/cpu:0'):
     paths_in, paths_out = [in_path], [out_path]
     ffwd(paths_in, paths_out, checkpoint_dir, batch_size=1, device_t=device)
+
+def ffwd_different_dimensions(in_path, out_path, checkpoint_dir, device_t=DEVICE, batch_size=4):
+    in_path_of_shape = defaultdict(list)
+    out_path_of_shape = defaultdict(list)
+    for i in range(len(in_path)):
+        in_image = in_path[i]
+        out_image = out_path[i]
+        shape = "%dx%dx%d" % get_img(in_image).shape
+        in_path_of_shape[shape].append(in_image)
+        out_path_of_shape[shape].append(out_image)
+    for shape in in_path_of_shape:
+        print('Processing images of shape %s' % shape)
+        ffwd(in_path_of_shape[shape], out_path_of_shape[shape], checkpoint_dir, device_t, batch_size)
 
 def build_parser():
     parser = ArgumentParser()
@@ -91,6 +105,9 @@ def build_parser():
     parser.add_argument('--batch-size', type=int,
                         dest='batch_size',help='batch size for feedforwarding',
                         metavar='BATCH_SIZE', default=BATCH_SIZE)
+
+    parser.add_argument('--allow-different-dimensions', action='store_true',
+                        dest='allow_different_dimensions', help='allow different image dimensions')
 
     return parser
 
@@ -118,8 +135,12 @@ def main():
         files = list_files(opts.in_path)
         full_in = map(lambda x: os.path.join(opts.in_path,x), files)
         full_out = map(lambda x: os.path.join(opts.out_path,x), files)
-        ffwd(full_in, full_out, opts.checkpoint_dir, device_t=opts.device,
-                batch_size=opts.batch_size)
+        if opts.allow_different_dimensions:
+            ffwd_different_dimensions(full_in, full_out, opts.checkpoint_dir, device_t=opts.device,
+                    batch_size=opts.batch_size)
+        else :
+            ffwd(full_in, full_out, opts.checkpoint_dir, device_t=opts.device,
+                    batch_size=opts.batch_size)
 
 if __name__ == '__main__':
     main()
