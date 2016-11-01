@@ -66,7 +66,7 @@ Use `style.py` to train a new style transfer network. Run `python style.py` to v
 Use `evaluate.py` to evaluate a style transfer network. Run `python evaluate.py` to view all the possible parameters. Evaluation takes 100 ms per frame (when batch size is 1) on a Maxwell Titan X. [More detailed documentation here](docs.md#evaluate). Takes several seconds per frame on a CPU. **Models for evaluation are [located here](https://drive.google.com/drive/folders/0B9jhaT37ydSyRk9UX0wwX3BpMzQ?usp=sharing)**. Example usage:
 
     python evaluate.py --checkpoint scream.ckpt \
-      --in-path examples/thumb/ \
+      --in-path examples/thumbs/ \
       --out-path examples/results/
 
 ### Stylizing Video
