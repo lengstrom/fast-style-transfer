@@ -36,6 +36,6 @@
 - `--checkpoint-dir`: Directory or `ckpt` file to load checkpoint from. Required.
 - `--in-path`: Path to video to transfer style to. Required.
 - `--out-path`: Path to out video. Required.
-- `--tmp-dir`: Diretory to put temporary processing files in. Will generate a dir if you do not pass it a path. Will delete tmpdir afterwards. Default: randomly generates invisible dir, then deletes it after execution completion.
+- `--tmp-dir`: Directory to put temporary processing files in. Will generate a dir if you do not pass it a path. Will delete tmpdir afterwards. Default: randomly generates invisible dir, then deletes it after execution completion.
 - `--device`: Device to evaluate frames with. Default: `/gpu:0`.
 - `--batch-size`: Batch size for evaluating images. Default: `4`.
