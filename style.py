@@ -1,7 +1,7 @@
 from __future__ import print_function
 import sys, os, pdb
 sys.path.insert(0, 'src')
-import numpy as np, scipy.misc 
+import numpy as np, scipy.misc
 from optimize import optimize
 from argparse import ArgumentParser
 from utils import save_img, get_img, exists, list_files
@@ -47,6 +47,10 @@ def build_parser():
                         help='gatys\' approach (for debugging, not supported)',
                         default=False)
 
+    parser.add_argument('--debug', dest='debug', action='store_true',
+                        help='debug mode',
+                        default=False)
+
     parser.add_argument('--epochs', type=int,
                         dest='epochs', help='num epochs',
                         metavar='EPOCHS', default=NUM_EPOCHS)
@@ -69,7 +73,7 @@ def build_parser():
                         dest='content_weight',
                         help='content weight (default %(default)s)',
                         metavar='CONTENT_WEIGHT', default=CONTENT_WEIGHT)
-    
+
     parser.add_argument('--style-weight', type=float,
                         dest='style_weight',
                         help='style weight (default %(default)s)',
@@ -79,7 +83,7 @@ def build_parser():
                         dest='tv_weight',
                         help='total variation regularization weight (default %(default)s)',
                         metavar='TV_WEIGHT', default=TV_WEIGHT)
-    
+
     parser.add_argument('--learning-rate', type=float,
                         dest='learning_rate',
                         help='learning rate (default %(default)s)',
@@ -107,7 +111,7 @@ def check_opts(opts):
 def _get_files(img_dir):
     files = list_files(img_dir)
     return map(lambda x: os.path.join(img_dir,x), files)
-    
+
 def main():
     parser = build_parser()
     options = parser.parse_args()
@@ -125,7 +129,8 @@ def main():
         "print_iterations":options.checkpoint_iterations,
         "batch_size":options.batch_size,
         "save_path":os.path.join(options.checkpoint_dir,'fns.ckpt'),
-        "learning_rate":options.learning_rate
+        "learning_rate":options.learning_rate,
+        'debug': options.debug,
     }
 
     if options.slow:
