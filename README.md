@@ -80,12 +80,12 @@ Use `transform_video.py` to transfer style into a video. Run `python transform_v
 
 ### Requirements
 You will need the following to run the above:
-- TensorFlow .11
-- Python 2, Pillow, scipy, numpy
+- TensorFlow 0.11.0
+- Python 2.7.9, Pillow 3.4.2, scipy 0.18.1, numpy 1.11.2
 - If you want to train (and don't want to wait for 4 months):
   - A decent GPU
   - All the required NVIDIA software to run TF on a GPU (cuda, etc)
-- ffmpeg if you want to stylize video
+- ffmpeg 3.1.3 if you want to stylize video
 
 ### Attributions/Thanks
 - This project could not have happened without the advice (and GPU access) given by [Anish Athalye](http://www.anishathalye.com/). 
