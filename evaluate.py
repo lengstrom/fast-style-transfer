@@ -55,7 +55,7 @@ def ffwd(data_in, paths_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):
                     img = get_img(path_in)
                     assert img.shape == img_shape, \
                         'Images have different dimensions. ' +  \
-                        'Resize images or use --allow_different_dimensions.'
+                        'Resize images or use --allow-different-dimensions.'
                     X[j] = img
             else:
                 X = data_in[pos:pos+batch_size]
