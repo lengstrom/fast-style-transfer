@@ -26,6 +26,7 @@ def ffwd(data_in, paths_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):
     batch_size = min(len(paths_out), batch_size)
     curr_num = 0
     soft_config = tf.ConfigProto(allow_soft_placement=True)
+    #soft_config.gpu_options.allocator_type = 'BFC'
     soft_config.gpu_options.allow_growth = True
     with g.as_default(), g.device(device_t), \
             tf.Session(config=soft_config) as sess:
@@ -142,8 +143,13 @@ def main():
                     device=opts.device)
     else:
         files = list_files(opts.in_path)
-        full_in = map(lambda x: os.path.join(opts.in_path,x), files)
-        full_out = map(lambda x: os.path.join(opts.out_path,x), files)
+        full_in = list(map(lambda x: os.path.join(opts.in_path,x), files))
+        full_out = list(map(lambda x: os.path.join(opts.out_path,x), files))
+        print('in')
+        print(full_in)
+        print('out')
+        print(full_out)
+
         if opts.allow_different_dimensions:
             ffwd_different_dimensions(full_in, full_out, opts.checkpoint_dir, 
                     device_t=opts.device, batch_size=opts.batch_size)
