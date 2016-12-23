@@ -7,9 +7,93 @@ from utils import save_img, get_img, exists, list_files
 from argparse import ArgumentParser
 from collections import defaultdict
 import time
+import json
+import subprocess
+import numpy
 
 BATCH_SIZE = 4
 DEVICE = '/gpu:0'
+
+
+def from_pipe(opts):
+    command = ["ffprobe",
+               '-v', "quiet",
+               '-print_format', 'json',
+               '-show_streams', opts.in_path]
+
+    info = json.loads(str(subprocess.check_output(command), encoding="utf8"))
+    width = int(info["streams"][0]["width"])
+    height = int(info["streams"][0]["height"])
+    fps = round(eval(info["streams"][0]["r_frame_rate"]))
+
+    command = ["ffmpeg",
+               '-i', opts.in_path,
+               '-f', 'image2pipe',
+               '-pix_fmt', 'rgb24',
+               '-vcodec', 'rawvideo', '-']
+
+    pipe_in = subprocess.Popen(command, stdout=subprocess.PIPE, bufsize=10 ** 9)
+
+    command = ["ffmpeg",
+               '-y',  # (optional) overwrite output file if it exists
+               '-f', 'rawvideo',
+               '-vcodec', 'rawvideo',
+               '-s', str(width) + 'x' + str(height),  # size of one frame
+               '-pix_fmt', 'rgb24',
+               '-r', str(fps),  # frames per second
+               '-i', '-',  # The imput comes from a pipe
+               '-an',  # Tells FFMPEG not to expect any audio
+               # '-vcodec', 'libx264',
+               opts.out]
+
+    pipe_out = subprocess.Popen(command, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+    g = tf.Graph()
+    soft_config = tf.ConfigProto(allow_soft_placement=True)
+    soft_config.gpu_options.allow_growth = True
+
+    with g.as_default(), g.device(opts.device), \
+         tf.Session(config=soft_config) as sess:
+        batch_shape = (opts.batch_size, height, width, 3)
+        img_placeholder = tf.placeholder(tf.float32, shape=batch_shape,
+                                         name='img_placeholder')
+        preds = transform.net(img_placeholder)
+        saver = tf.train.Saver()
+        if os.path.isdir(opts.checkpoint):
+            ckpt = tf.train.get_checkpoint_state(opts.checkpoint)
+            if ckpt and ckpt.model_checkpoint_path:
+                saver.restore(sess, ckpt.model_checkpoint_path)
+            else:
+                raise Exception("No checkpoint found...")
+        else:
+            saver.restore(sess, opts.checkpoint)
+
+        X = np.zeros(batch_shape, dtype=np.float32)
+
+        while True:
+            for i in range(0, opts.batch_size):
+                raw_image = pipe_in.stdout.read(width * height * 3)
+                image = numpy.fromstring(raw_image, dtype='uint8')
+                image = image.reshape((height, width, 3))
+                X[i] = image
+
+            _preds = sess.run(preds, feed_dict={img_placeholder: X})
+
+            for i in range(0, opts.batch_size):
+                img = np.clip(_preds[i], 0, 255).astype(np.uint8)
+                try:
+                    pipe_out.stdin.write(img)
+                except IOError as err:
+                    ffmpeg_error = pipe_out.stderr.read()
+                    error = (str(err) + ("\n\nMoviePy error: FFMPEG encountered "
+                                         "the following error while writing file:"
+                                         "\n\n %s" % ffmpeg_error))
+                    pipe_out.stdin.close()
+                    pipe_in.stdout.close()
+                    pipe_out.terminate()
+                    pipe_in.terminate()
+                    del pipe_in
+                    del pipe_out
+                    raise IOError(error)
 
 # get img_shape
 def ffwd(data_in, paths_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):

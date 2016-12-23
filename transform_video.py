@@ -35,6 +35,10 @@ def build_parser():
     parser.add_argument('--batch-size', type=int,
                         dest='batch_size',help='batch size for eval. default 4.',
                         metavar='BATCH_SIZE', default=BATCH_SIZE)
+
+    parser.add_argument('--no-disk', type=bool, dest='no_disk',
+                        help='Don\'t save intermediate files to disk. Default False',
+                        metavar='NO_DISK', default=False)
     return parser
 
 def check_opts(opts):
@@ -44,40 +48,43 @@ def check_opts(opts):
 def main():
     parser = build_parser()
     opts = parser.parse_args()
-    
-    in_dir = os.path.join(opts.tmp_dir, 'in')
-    out_dir = os.path.join(opts.tmp_dir, 'out')
-    if not os.path.exists(in_dir):
-        os.makedirs(in_dir)
-    if not os.path.exists(out_dir):
-        os.makedirs(out_dir)
 
-    in_args = [
-        'ffmpeg',
-        '-i', opts.in_path,
-        '%s/frame_%%d.png' % in_dir
-    ]
+    if opts.no_disk:
+        evaluate.from_pipe(opts)
+    else:
+        in_dir = os.path.join(opts.tmp_dir, 'in')
+        out_dir = os.path.join(opts.tmp_dir, 'out')
+        if not os.path.exists(in_dir):
+            os.makedirs(in_dir)
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
 
-    subprocess.call(" ".join(in_args), shell=True)
-    base_names = list_files(in_dir)
-    in_files = list(map(lambda x: os.path.join(in_dir, x), base_names))
-    out_files = list(map(lambda x: os.path.join(out_dir, x), base_names))
-    evaluate.ffwd(in_files, out_files, opts.checkpoint, device_t=opts.device,
-                  batch_size=opts.batch_size)
-    fr = 30 # wtf
-    out_args = [
-        'ffmpeg',
-        '-i', '%s/frame_%%d.png' % out_dir,
-        '-f', 'mp4',
-        '-q:v', '0',
-        '-vcodec', 'mpeg4',
-        '-r', str(fr),
-        opts.out
-    ]
+        in_args = [
+            'ffmpeg',
+            '-i', opts.in_path,
+            '%s/frame_%%d.png' % in_dir
+        ]
 
-    subprocess.call(" ".join(out_args), shell=True)
-    print('Video at: %s' % opts.out)
-    shutil.rmtree(opts.tmp_dir)
+        subprocess.call(" ".join(in_args), shell=True)
+        base_names = list_files(in_dir)
+        in_files = list(map(lambda x: os.path.join(in_dir, x), base_names))
+        out_files = list(map(lambda x: os.path.join(out_dir, x), base_names))
+        evaluate.ffwd(in_files, out_files, opts.checkpoint, device_t=opts.device,
+                      batch_size=opts.batch_size)
+        fr = 30 # wtf
+        out_args = [
+            'ffmpeg',
+            '-i', '%s/frame_%%d.png' % out_dir,
+            '-f', 'mp4',
+            '-q:v', '0',
+            '-vcodec', 'mpeg4',
+            '-r', str(fr),
+            opts.out
+        ]
+
+        subprocess.call(" ".join(out_args), shell=True)
+        print('Video at: %s' % opts.out)
+        shutil.rmtree(opts.tmp_dir)
  
 if __name__ == '__main__':
     main()
