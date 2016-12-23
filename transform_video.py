@@ -1,3 +1,4 @@
+from __future__ import print_function
 from argparse import ArgumentParser
 import sys
 sys.path.insert(0, 'src')
@@ -59,8 +60,8 @@ def main():
 
     subprocess.call(" ".join(in_args), shell=True)
     base_names = list_files(in_dir)
-    in_files = map(lambda x: os.path.join(in_dir, x), base_names)
-    out_files = map(lambda x: os.path.join(out_dir, x), base_names)
+    in_files = list(map(lambda x: os.path.join(in_dir, x), base_names))
+    out_files = list(map(lambda x: os.path.join(out_dir, x), base_names))
     evaluate.ffwd(in_files, out_files, opts.checkpoint, device_t=opts.device,
                   batch_size=opts.batch_size)
     fr = 30 # wtf
@@ -75,7 +76,7 @@ def main():
     ]
 
     subprocess.call(" ".join(out_args), shell=True)
-    print 'Video at: %s' % opts.out
+    print('Video at: %s' % opts.out)
     shutil.rmtree(opts.tmp_dir)
  
 if __name__ == '__main__':
