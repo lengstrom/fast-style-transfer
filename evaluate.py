@@ -68,32 +68,46 @@ def from_pipe(opts):
             saver.restore(sess, opts.checkpoint)
 
         X = np.zeros(batch_shape, dtype=np.float32)
+        nbytes = 3 * width * height
+        read_input = True
 
-        while True:
+        while read_input:
             for i in range(0, opts.batch_size):
                 raw_image = pipe_in.stdout.read(width * height * 3)
+
+                if len(raw_image) != nbytes:
+                    read_input = False
+                    break
+
                 image = numpy.fromstring(raw_image, dtype='uint8')
                 image = image.reshape((height, width, 3))
                 X[i] = image
 
-            _preds = sess.run(preds, feed_dict={img_placeholder: X})
+            if read_input:
+                _preds = sess.run(preds, feed_dict={img_placeholder: X})
 
-            for i in range(0, opts.batch_size):
-                img = np.clip(_preds[i], 0, 255).astype(np.uint8)
-                try:
-                    pipe_out.stdin.write(img)
-                except IOError as err:
-                    ffmpeg_error = pipe_out.stderr.read()
-                    error = (str(err) + ("\n\nMoviePy error: FFMPEG encountered "
-                                         "the following error while writing file:"
-                                         "\n\n %s" % ffmpeg_error))
-                    pipe_out.stdin.close()
-                    pipe_in.stdout.close()
-                    pipe_out.terminate()
-                    pipe_in.terminate()
-                    del pipe_in
-                    del pipe_out
-                    raise IOError(error)
+                for i in range(0, opts.batch_size):
+                    img = np.clip(_preds[i], 0, 255).astype(np.uint8)
+                    try:
+                        pipe_out.stdin.write(img)
+                    except IOError as err:
+                        ffmpeg_error = pipe_out.stderr.read()
+                        error = (str(err) + ("\n\nMoviePy error: FFMPEG encountered "
+                                             "the following error while writing file:"
+                                             "\n\n %s" % ffmpeg_error))
+                        pipe_out.stdin.close()
+                        pipe_in.stdout.close()
+                        pipe_out.terminate()
+                        pipe_in.terminate()
+                        del pipe_in
+                        del pipe_out
+                        raise IOError(error)
+        pipe_out.stdin.close()
+        pipe_in.stdout.close()
+        pipe_out.terminate()
+        pipe_in.terminate()
+        del pipe_in
+        del pipe_out
 
 # get img_shape
 def ffwd(data_in, paths_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):
