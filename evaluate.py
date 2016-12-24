@@ -83,12 +83,15 @@ def from_pipe(opts):
                 raw_image = pipe_in.stdout.read(width * height * 3)
 
                 if len(raw_image) != nbytes:
-                    last = True
-                    X = X[:count]
-                    batch_shape = (count, height, width, 3)
-                    img_placeholder = tf.placeholder(tf.float32, shape=batch_shape,
+                    if count == 0:
+                        read_input = False
+                    else:
+                        last = True
+                        X = X[:count]
+                        batch_shape = (count, height, width, 3)
+                        img_placeholder = tf.placeholder(tf.float32, shape=batch_shape,
                                                      name='img_placeholder')
-                    preds = transform.net(img_placeholder)
+                        preds = transform.net(img_placeholder)
                     break
 
                 image = numpy.fromstring(raw_image, dtype='uint8')
