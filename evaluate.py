@@ -20,10 +20,10 @@ DEVICE = '/gpu:0'
 
 def ffwd_video(path_in, path_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):
     batch_size = 1
-    video_clip = VideoFileClip(path_in)
+    video_clip = VideoFileClip(path_in, audio=False)
     video_writer = ffmpeg_writer.FFMPEG_VideoWriter(path_out, video_clip.size, video_clip.fps, codec="libx264",
                                                     preset="medium", bitrate="2000k",
-                                                    audiofile=None, threads=None,
+                                                    audiofile=path_in, threads=None,
                                                     ffmpeg_params=None)
 
     g = tf.Graph()
@@ -31,7 +31,7 @@ def ffwd_video(path_in, path_out, checkpoint_dir, device_t='/gpu:0', batch_size=
     soft_config.gpu_options.allow_growth = True
     with g.as_default(), g.device(device_t), \
             tf.Session(config=soft_config) as sess:
-        batch_shape = (batch_size, video_clip.size[0], video_clip.size[1], 3)
+        batch_shape = (batch_size, video_clip.size[1], video_clip.size[0], 3)
         img_placeholder = tf.placeholder(tf.float32, shape=batch_shape,
                                          name='img_placeholder')
 
