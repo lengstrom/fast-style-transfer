@@ -19,7 +19,6 @@ DEVICE = '/gpu:0'
 
 
 def ffwd_video(path_in, path_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):
-    batch_size = 1
     video_clip = VideoFileClip(path_in, audio=False)
     video_writer = ffmpeg_writer.FFMPEG_VideoWriter(path_out, video_clip.size, video_clip.fps, codec="libx264",
                                                     preset="medium", bitrate="2000k",
@@ -46,11 +45,25 @@ def ffwd_video(path_in, path_out, checkpoint_dir, device_t='/gpu:0', batch_size=
         else:
             saver.restore(sess, checkpoint_dir)
 
-        for frame in video_clip.iter_frames():
-            X = np.zeros(batch_shape, dtype=np.float32)
-            X[0] = frame
+        X = np.zeros(batch_shape, dtype=np.float32)
+
+        def style_and_write(count):
+            for i in range(count, batch_size):
+                X[i] = X[count - 1]  # Use last frame to fill X
             _preds = sess.run(preds, feed_dict={img_placeholder: X})
-            video_writer.write_frame(np.clip(_preds[0], 0, 255).astype(np.uint8))
+            for i in range(0, count):
+                video_writer.write_frame(np.clip(_preds[i], 0, 255).astype(np.uint8))
+
+        frame_count = 0  # The frame count that written to X
+        for frame in video_clip.iter_frames():
+            X[frame_count] = frame
+            frame_count += 1
+            if frame_count == batch_size:
+                style_and_write(frame_count)
+                frame_count = 0
+
+        if frame_count != 0:
+            style_and_write(frame_count)
 
         video_writer.close()
 
