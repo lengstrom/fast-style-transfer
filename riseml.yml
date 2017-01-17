@@ -1,0 +1,11 @@
+description: Fast neural style transfer demo.
+image:
+  - riseml/keras-gpu:latest
+service:
+  commands:
+    - pip install requests riseml Pillow
+    - mkdir -p /scratch/models
+    - (wget -nc 'https://docs.google.com/uc?export=download&id=0B9jhaT37ydSyb0NuYmk2ZEpOR0E' -O /scratch/models/udnie.ckpt || true)
+    - python predict_daemon.py --checkpoint /scratch/models/udnie.ckpt
+  input: image
+  output: image
