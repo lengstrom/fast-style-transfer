@@ -87,6 +87,16 @@ You will need the following to run the above:
   - All the required NVIDIA software to run TF on a GPU (cuda, etc)
 - ffmpeg 3.1.3 if you want to stylize video
 
+### Citation
+```
+  @misc{engstrom2016faststyletransfer,
+    author = {Logan Engstrom},
+    title = {Fast Style Transfer},
+    year = {2016},
+    howpublished = {\url{https://github.com/lengstrom/fast-style-transfer/}},
+    note = {commit xxxxxxx}
+  }
+```
 ### Attributions/Thanks
 - This project could not have happened without the advice (and GPU access) given by [Anish Athalye](http://www.anishathalye.com/). 
   - The project also borrowed some code from Anish's [Neural Style](https://github.com/anishathalye/neural-style/)
