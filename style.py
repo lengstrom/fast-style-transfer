@@ -106,7 +106,8 @@ def check_opts(opts):
 
 def _get_files(img_dir):
     files = list_files(img_dir)
-    return map(lambda x: os.path.join(img_dir,x), files)
+    return [os.path.join(img_dir,x) for x in files]
+
     
 def main():
     parser = build_parser()
