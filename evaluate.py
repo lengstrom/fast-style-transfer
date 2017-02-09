@@ -238,7 +238,6 @@ def check_opts(opts):
         assert opts.batch_size > 0
 
 def main():
-    check_version()
     parser = build_parser()
     opts = parser.parse_args()
     check_opts(opts)
@@ -254,8 +253,8 @@ def main():
                     device=opts.device)
     else:
         files = list_files(opts.in_path)
-        full_in = map(lambda x: os.path.join(opts.in_path,x), files)
-        full_out = map(lambda x: os.path.join(opts.out_path,x), files)
+        full_in = [os.path.join(opts.in_path,x) for x in files]
+        full_out = [os.path.join(opts.out_path,x) for x in files]
         if opts.allow_different_dimensions:
             ffwd_different_dimensions(full_in, full_out, opts.checkpoint_dir, 
                     device_t=opts.device, batch_size=opts.batch_size)

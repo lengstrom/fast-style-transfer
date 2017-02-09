@@ -110,7 +110,6 @@ def _get_files(img_dir):
 
     
 def main():
-    check_version()
     parser = build_parser()
     options = parser.parse_args()
     check_opts(options)
