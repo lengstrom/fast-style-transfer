@@ -3,7 +3,7 @@
 `style.py` trains networks that can transfer styles from artwork into images.
 
 **Flags**
-- `--checkpoint`: Directory to save checkpoint in. Required.
+- `--checkpoint-dir`: Directory to save checkpoint in. Required.
 - `--style`: Path to style image. Required.
 - `--train-path`: Path to training images folder. Default: `data/train2014`.
 - `--test`: Path to content image to test network on at at every checkpoint iteration. Default: no image.
@@ -28,6 +28,7 @@
 - `--out-path`: Out path of transformed image or out directory to put transformed images from in directory (if `in_path` is a directory). Required.
 - `--device`: Device used to transform image. Default: `/cpu:0`.
 - `--batch-size`: Batch size used to evaluate images. In particular meant for directory transformations. Default: `4`.
+- `--allow-different-dimensions`: Allow different image dimensions. Default: not enabled
 
 ## transform_video.py
 `transform_video.py` transforms videos into stylized videos given a style transfer net.
