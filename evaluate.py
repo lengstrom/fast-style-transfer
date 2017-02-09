@@ -3,7 +3,7 @@ sys.path.insert(0, 'src')
 import transform, numpy as np, vgg, pdb, os
 import scipy.misc
 import tensorflow as tf
-from utils import save_img, get_img, exists, list_files
+from utils import save_img, get_img, exists, list_files, check_version
 from argparse import ArgumentParser
 import time
 
@@ -102,6 +102,7 @@ def check_opts(opts):
         assert opts.batch_size > 0
 
 def main():
+    check_version()
     parser = build_parser()
     opts = parser.parse_args()
     check_opts(opts)

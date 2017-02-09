@@ -1,4 +1,4 @@
-import scipy.misc, numpy as np, os
+import scipy.misc, numpy as np, os, sys
 
 def save_img(out_path, img):
     img = np.clip(img, 0, 255).astype(np.uint8)
@@ -31,3 +31,13 @@ def list_files(in_path):
 
     return files
 
+def check_version():
+    if sys.version_info[0] != 2:
+        err_str = (
+            "This project only supports Python 2! Either run using "
+            "Python 2 or submit a pull request to "
+            "https://github.com/lengstrom/fast-style-transfer/ "
+            "to make the project version neutral!"
+        )
+
+        raise Exception(err_str)
