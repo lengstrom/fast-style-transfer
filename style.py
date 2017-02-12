@@ -4,7 +4,7 @@ sys.path.insert(0, 'src')
 import numpy as np, scipy.misc 
 from optimize import optimize
 from argparse import ArgumentParser
-from utils import save_img, get_img, exists, list_files, check_version
+from utils import save_img, get_img, exists, list_files
 import evaluate
 
 CONTENT_WEIGHT = 7.5e0
