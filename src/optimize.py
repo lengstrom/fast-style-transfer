@@ -1,4 +1,5 @@
 from __future__ import print_function
+import functools
 import vgg, pdb, time
 import tensorflow as tf, numpy as np, os
 import transform
@@ -75,7 +76,7 @@ def optimize(content_targets, style_target, content_weight, style_weight,
             style_gram = style_features[style_layer]
             style_losses.append(2 * tf.nn.l2_loss(grams - style_gram)/style_gram.size)
 
-        style_loss = style_weight * reduce(tf.add, style_losses) / batch_size
+        style_loss = style_weight * functools.reduce(tf.add, style_losses) / batch_size
 
         # total variation denoising
         tv_y_size = _tensor_size(preds[:,1:,:,:])
@@ -138,4 +139,4 @@ def optimize(content_targets, style_target, content_weight, style_weight,
 
 def _tensor_size(tensor):
     from operator import mul
-    return reduce(mul, (d.value for d in tensor.get_shape()[1:]), 1)
+    return functools.reduce(mul, (d.value for d in tensor.get_shape()[1:]), 1)

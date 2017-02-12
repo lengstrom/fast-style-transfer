@@ -4,7 +4,7 @@ sys.path.insert(0, 'src')
 import numpy as np, scipy.misc 
 from optimize import optimize
 from argparse import ArgumentParser
-from utils import save_img, get_img, exists, list_files, check_version
+from utils import save_img, get_img, exists, list_files
 import evaluate
 
 CONTENT_WEIGHT = 7.5e0
@@ -106,10 +106,10 @@ def check_opts(opts):
 
 def _get_files(img_dir):
     files = list_files(img_dir)
-    return map(lambda x: os.path.join(img_dir,x), files)
+    return [os.path.join(img_dir,x) for x in files]
+
     
 def main():
-    check_version()
     parser = build_parser()
     options = parser.parse_args()
     check_opts(options)
