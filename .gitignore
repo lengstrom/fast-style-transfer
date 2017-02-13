@@ -97,3 +97,5 @@ ENV/
 
 # Rope project settings
 .ropeproject
+.floydexpt
+.floydignore

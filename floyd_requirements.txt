@@ -1,0 +1,4 @@
+Pillow
+scipy
+numpy
+flask
