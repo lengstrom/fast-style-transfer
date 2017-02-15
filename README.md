@@ -17,7 +17,7 @@ Our implementation is based off of a combination of Gatys' [A Neural Algorithm o
 
 It is very easy to train, evaluate and serve fast style transfer on [Floydhub][https://www.floydhub.com/]. Follow the instructions below:
 
-1. Visit [Floydhub][https://www.floydhub.com/] site to create an account if you do not have one.
+1. Visit [Floydhub](https://www.floydhub.com/) site to create an account if you do not have one.
 2. Clone this repository to your machine.
 3. Run `floyd init <project name>` inside the directory.
 
