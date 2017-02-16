@@ -94,6 +94,10 @@ def build_parser():
                         help='tensorflow device to use /cpu:0 or /gpu:0',
                         metavar='DEVICE', default=DEVICE)
 
+    parser.add_argument('--base-model-path', type=str,
+                        help='pre-trained model to start from',
+                        metavar='BASE-MODEL-PATH', default=None)
+
     return parser
 
 def check_opts(opts):
@@ -138,6 +142,7 @@ def main():
         "learning_rate":options.learning_rate,
         "device":options.device,
         "total_iterations":options.total_iterations,
+        "base_model_path":options.base_model_path,
     }
 
     if options.slow:

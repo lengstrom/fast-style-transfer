@@ -13,7 +13,8 @@ DEVICES = 'CUDA_VISIBLE_DEVICES'
 def optimize(content_targets, style_target, content_weight, style_weight,
              tv_weight, vgg_path, epochs=2, print_iterations=1000,
              batch_size=4, save_path='saver/fns.ckpt', slow=False,
-             learning_rate=1e-3, device='/cpu:0', debug=False, total_iterations=-1):
+             learning_rate=1e-3, device='/cpu:0', debug=False, total_iterations=-1,
+             base_model_path=None):
     if slow:
         batch_size = 1
     mod = len(content_targets) % batch_size
@@ -30,7 +31,7 @@ def optimize(content_targets, style_target, content_weight, style_weight,
     # precompute style features
     print("Precomputing style features")
     sys.stdout.flush()
-    with tf.Graph().as_default(), tf.device(device), tf.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)) as sess:
+    with tf.Graph().as_default(), tf.device(device), tf.Session(config=tf.ConfigProto(allow_soft_placement=True)) as sess:
         style_image = tf.placeholder(tf.float32, shape=style_shape, name='style_image')
         style_image_pre = vgg.preprocess(style_image)
         net = vgg.net(vgg_path, style_image_pre)
@@ -97,10 +98,23 @@ def optimize(content_targets, style_target, content_weight, style_weight,
         # overall loss
         train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss)
         sess.run(tf.initialize_all_variables())
+
+        # If base model file is present, load that in to the session
+        if base_model_path:
+            saver = tf.train.Saver()
+            if os.path.isdir(base_model_path):
+                ckpt = tf.train.get_checkpoint_state(base_model_path)
+                if ckpt and ckpt.model_checkpoint_path:
+                    saver.restore(sess, ckpt.model_checkpoint_path)
+                else:
+                    raise Exception("No checkpoint found...")
+            else:
+                saver.restore(sess, base_model_path)
+
         import random
         uid = random.randint(1, 100)
         print("UID: %s" % uid)
-        sys.stdout.flush() 
+        sys.stdout.flush()
         for epoch in range(epochs):
             num_examples = len(content_targets)
             print("number of examples: %s" % num_examples)
