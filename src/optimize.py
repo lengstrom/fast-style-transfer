@@ -1,4 +1,5 @@
 from __future__ import print_function
+import sys
 import vgg, pdb, time
 import tensorflow as tf, numpy as np, os
 import transform
@@ -12,7 +13,7 @@ DEVICES = 'CUDA_VISIBLE_DEVICES'
 def optimize(content_targets, style_target, content_weight, style_weight,
              tv_weight, vgg_path, epochs=2, print_iterations=1000,
              batch_size=4, save_path='saver/fns.ckpt', slow=False,
-             learning_rate=1e-3, debug=False):
+             learning_rate=1e-3, device='/cpu:0', debug=False, total_iterations=-1):
     if slow:
         batch_size = 1
     mod = len(content_targets) % batch_size
@@ -27,7 +28,9 @@ def optimize(content_targets, style_target, content_weight, style_weight,
     print(style_shape)
 
     # precompute style features
-    with tf.Graph().as_default(), tf.device('/cpu:0'), tf.Session() as sess:
+    print("Precomputing style features")
+    sys.stdout.flush()
+    with tf.Graph().as_default(), tf.device(device), tf.Session(config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)) as sess:
         style_image = tf.placeholder(tf.float32, shape=style_shape, name='style_image')
         style_image_pre = vgg.preprocess(style_image)
         net = vgg.net(vgg_path, style_image_pre)
@@ -41,6 +44,9 @@ def optimize(content_targets, style_target, content_weight, style_weight,
     with tf.Graph().as_default(), tf.Session() as sess:
         X_content = tf.placeholder(tf.float32, shape=batch_shape, name="X_content")
         X_pre = vgg.preprocess(X_content)
+
+        print("Precomputing content features")
+        sys.stdout.flush()
 
         # precompute content features
         content_features = {}
@@ -56,6 +62,8 @@ def optimize(content_targets, style_target, content_weight, style_weight,
             preds = transform.net(X_content/255.0)
             preds_pre = vgg.preprocess(preds)
 
+        print("Building VGG net")
+        sys.stdout.flush()
         net = vgg.net(vgg_path, preds_pre)
 
         content_size = _tensor_size(content_features[CONTENT_LAYER])*batch_size
@@ -92,10 +100,16 @@ def optimize(content_targets, style_target, content_weight, style_weight,
         import random
         uid = random.randint(1, 100)
         print("UID: %s" % uid)
+        sys.stdout.flush() 
         for epoch in range(epochs):
             num_examples = len(content_targets)
+            print("number of examples: %s" % num_examples)
+            sys.stdout.flush()
             iterations = 0
             while iterations * batch_size < num_examples:
+                print("Current iteration : %s" % iterations)
+                sys.stdout.flush()
+
                 start_time = time.time()
                 curr = iterations * batch_size
                 step = curr + batch_size
@@ -118,23 +132,29 @@ def optimize(content_targets, style_target, content_weight, style_weight,
                 is_print_iter = int(iterations) % print_iterations == 0
                 if slow:
                     is_print_iter = epoch % print_iterations == 0
-                is_last = epoch == epochs - 1 and iterations * batch_size >= num_examples
+                is_last = False
+                if epoch == epochs - 1 and iterations * batch_size >= num_examples:
+                    is_last = True
+                if total_iterations > 0 and iterations >= total_iterations:
+                    is_last = True
                 should_print = is_print_iter or is_last
                 if should_print:
                     to_get = [style_loss, content_loss, tv_loss, loss, preds]
                     test_feed_dict = {
-                       X_content:X_batch
+                        X_content:X_batch
                     }
 
                     tup = sess.run(to_get, feed_dict = test_feed_dict)
                     _style_loss,_content_loss,_tv_loss,_loss,_preds = tup
                     losses = (_style_loss, _content_loss, _tv_loss, _loss)
                     if slow:
-                       _preds = vgg.unprocess(_preds)
+                        _preds = vgg.unprocess(_preds)
                     else:
-                       saver = tf.train.Saver()
-                       res = saver.save(sess, save_path)
+                        saver = tf.train.Saver()
+                        res = saver.save(sess, save_path)
                     yield(_preds, losses, iterations, epoch)
+                if is_last:
+                    break
 
 def _tensor_size(tensor):
     from operator import mul

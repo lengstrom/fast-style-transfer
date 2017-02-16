@@ -231,7 +231,7 @@ def build_parser():
     return parser
 
 def check_opts(opts):
-    exists(opts.checkpoint_dir, 'Checkpoint not found!')
+    # exists(opts.checkpoint_dir, 'Checkpoint not found!')
     exists(opts.in_path, 'In path not found!')
     if os.path.isdir(opts.out_path):
         exists(opts.out_path, 'out dir not found!')
