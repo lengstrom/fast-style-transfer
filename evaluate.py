@@ -4,7 +4,7 @@ sys.path.insert(0, 'src')
 import transform, numpy as np, vgg, pdb, os
 import scipy.misc
 import tensorflow as tf
-from utils import save_img, get_img, exists, list_files
+from utils import save_img, get_img, exists, list_files, crop_img, get_img_bordered
 from argparse import ArgumentParser
 from collections import defaultdict
 import time
@@ -128,7 +128,7 @@ def ffwd(data_in, paths_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):
     is_paths = type(data_in[0]) == str
     if is_paths:
         assert len(data_in) == len(paths_out)
-        img_shape = get_img(data_in[0]).shape
+        img_shape = get_img_bordered(data_in[0]).shape
     else:
         assert data_in.size[0] == len(paths_out)
         img_shape = X[0].shape
@@ -163,7 +163,7 @@ def ffwd(data_in, paths_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):
                 curr_batch_in = data_in[pos:pos+batch_size]
                 X = np.zeros(batch_shape, dtype=np.float32)
                 for j, path_in in enumerate(curr_batch_in):
-                    img = get_img(path_in)
+                    img = get_img_bordered(path_in)
                     assert img.shape == img_shape, \
                         'Images have different dimensions. ' +  \
                         'Resize images or use --allow-different-dimensions.'
@@ -173,7 +173,7 @@ def ffwd(data_in, paths_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):
 
             _preds = sess.run(preds, feed_dict={img_placeholder:X})
             for j, path_out in enumerate(curr_batch_out):
-                save_img(path_out, _preds[j])
+                save_img(path_out, crop_img(_preds[j]))
                 
         remaining_in = data_in[num_iters*batch_size:]
         remaining_out = paths_out[num_iters*batch_size:]
@@ -192,7 +192,7 @@ def ffwd_different_dimensions(in_path, out_path, checkpoint_dir,
     for i in range(len(in_path)):
         in_image = in_path[i]
         out_image = out_path[i]
-        shape = "%dx%dx%d" % get_img(in_image).shape
+        shape = "%dx%dx%d" % get_img_bordered(in_image).shape
         in_path_of_shape[shape].append(in_image)
         out_path_of_shape[shape].append(out_image)
     for shape in in_path_of_shape:
