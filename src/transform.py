@@ -31,14 +31,15 @@ def _conv_tranpose_layer(net, num_filters, filter_size, strides):
     weights_init = _conv_init_vars(net, num_filters, filter_size, transpose=True)
 
     batch_size, rows, cols, in_channels = [i.value for i in net.get_shape()]
-    new_rows, new_cols = int(rows * strides), int(cols * strides)
-    # new_shape = #tf.pack([tf.shape(net)[0], new_rows, new_cols, num_filters])
+    input_shape = tf.shape(net)
 
-    new_shape = [batch_size, new_rows, new_cols, num_filters]
+    new_shape = [input_shape[0], input_shape[1]*strides, input_shape[2]*strides, num_filters]
     tf_shape = tf.stack(new_shape)
     strides_shape = [1,strides,strides,1]
 
     net = tf.nn.conv2d_transpose(net, weights_init, tf_shape, strides_shape, padding='SAME')
+    net.set_shape([batch_size if batch_size else None, int(rows * strides) if rows else None,
+                   int(cols * strides) if cols else None, num_filters])
     net = _instance_norm(net)
     return tf.nn.relu(net)
 
