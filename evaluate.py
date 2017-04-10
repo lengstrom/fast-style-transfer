@@ -1,13 +1,11 @@
 from __future__ import print_function
-import sys
-sys.path.insert(0, 'src')
-import transform, numpy as np, vgg, pdb, os
-import scipy.misc
+
+from src import transform, vgg
+import numpy as np, os
 import tensorflow as tf
-from utils import save_img, get_img, exists, list_files
+from src.utils import save_img, get_img, exists, list_files
 from argparse import ArgumentParser
 from collections import defaultdict
-import time
 import json
 import subprocess
 import numpy
