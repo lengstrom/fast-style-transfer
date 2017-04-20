@@ -1,0 +1,8 @@
+funcsigs==1.0.2
+mock==2.0.0
+numpy==1.11.2
+pbr==1.10.0
+Pillow==3.4.2
+protobuf==3.0.0
+scipy==0.18.1
+six==1.10.0
