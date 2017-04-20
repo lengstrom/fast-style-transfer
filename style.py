@@ -160,7 +160,7 @@ def main():
             else:
                 save_img(preds_path, img)
     ckpt_dir = options.checkpoint_dir
-    cmd_text = 'python evaluate.py --checkpoint-dir %s ...' % ckpt_dir
+    cmd_text = 'python evaluate.py --checkpoint %s ...' % ckpt_dir
     print("Training complete. For evaluation:\n    `%s`" % cmd_text)
 
 if __name__ == '__main__':
