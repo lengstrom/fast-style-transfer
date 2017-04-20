@@ -1,5 +1,8 @@
 ## Fast Style Transfer in [TensorFlow](https://github.com/tensorflow/tensorflow)
 
+<a href="https://riseml.com/lengstrom/fast-neural-style/demo"><img align="right"
+src="http://cdn.riseml.com/btn.png"></a>
+
 Add styles from famous paintings to any photo in a fraction of a second! [You can even style videos!](#video-stylization)
 
 <p align = 'center'>
