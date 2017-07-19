@@ -79,7 +79,7 @@ def optimize(content_targets, style_target, content_weight, style_weight,
         style_loss = style_weight * functools.reduce(tf.add, style_losses) / batch_size
 
         # total variation denoising
-        tv_loss = tf.reduce_sum(tf.image.total_variation(preds))/batch_size
+        tv_loss = tv_weight*tf.reduce_sum(tf.image.total_variation(preds))/batch_size
 
         loss = content_loss + style_loss + tv_loss
 
