@@ -9,7 +9,7 @@
 - `--test`: Path to content image to test network on at at every checkpoint iteration. Default: no image.
 - `--test-dir`: Path to directory to save test images in. Required if `--test` is passed a value.
 - `--epochs`: Epochs to train for. Default: `2`.
-- `--batch_size`: Batch size for training. Default: `4`.
+- `--batch-size`: Batch size for training. Default: `4`.
 - `--checkpoint-iterations`: Number of iterations to go for between checkpoints. Default: `2000`.
 - `--vgg-path`: Path to VGG19 network (default). Can pass VGG16 if you want to try out other loss functions. Default: `data/imagenet-vgg-verydeep-19.mat`.
 - `--content-weight`: Weight of content in loss function. Default: `7.5e0`.
