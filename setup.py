@@ -4,10 +4,10 @@ from setuptools import setup
 REQUIRED_PACKAGES = ['pillow']
 
 setup(
-    name='trainer',
+    name='src',
     version='0.1',
     install_requires=REQUIRED_PACKAGES,
     packages=find_packages(),
     include_package_data=True,
-    description='My trainer application package.'
+    description='My src application package.'
 )

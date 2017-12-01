@@ -3,9 +3,12 @@
 import tensorflow as tf
 import numpy as np
 import scipy.io
-import pdb
+from StringIO import StringIO
+from tensorflow.python.lib.io import file_io
+import scipy.io
 
-MEAN_PIXEL = np.array([ 123.68 ,  116.779,  103.939])
+MEAN_PIXEL = np.array([123.68, 116.779, 103.939])
+
 
 def net(data_path, input_image):
     layers = (
@@ -23,9 +26,10 @@ def net(data_path, input_image):
         'relu5_3', 'conv5_4', 'relu5_4'
     )
 
-    data = scipy.io.loadmat(data_path)
+    f = StringIO(file_io.read_file_to_string(data_path))
+    data = scipy.io.loadmat(f)
     mean = data['normalization'][0][0][0]
-    mean_pixel = np.mean(mean, axis=(0, 1))
+    # mean_pixel = np.mean(mean, axis=(0, 1))
     weights = data['layers'][0]
 
     net = {}
@@ -51,13 +55,13 @@ def net(data_path, input_image):
 
 def _conv_layer(input, weights, bias):
     conv = tf.nn.conv2d(input, tf.constant(weights), strides=(1, 1, 1, 1),
-            padding='SAME')
+                        padding='SAME')
     return tf.nn.bias_add(conv, bias)
 
 
 def _pool_layer(input):
     return tf.nn.max_pool(input, ksize=(1, 2, 2, 1), strides=(1, 2, 2, 1),
-            padding='SAME')
+                          padding='SAME')
 
 
 def preprocess(image):

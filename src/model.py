@@ -3,7 +3,7 @@ import functools
 import vgg
 import tensorflow as tf
 import transform
-from utils import read_jpeg, get_img
+from utils import get_img
 
 STYLE_LAYERS = ('relu1_1', 'relu2_1', 'relu3_1', 'relu4_1', 'relu5_1')
 CONTENT_LAYER = 'relu4_2'
@@ -11,7 +11,6 @@ CONTENT_LAYER = 'relu4_2'
 
 # pre-compute style features
 def pre_compute_style_features(vgg_path, style_image_path):
-    #style_image = tf.cast(read_jpeg(style_image_path), dtype=tf.float32)
     style_image = tf.constant(get_img(style_image_path), dtype=tf.float32)
     style_image = tf.expand_dims(style_image, axis=0)
 

@@ -1,17 +1,16 @@
 from __future__ import print_function
-import sys
 
-sys.path.insert(0, 'src')
-import transform, numpy as np, vgg, pdb, os
-import scipy.misc
+
+import numpy as np, os
+from src import transform
 import tensorflow as tf
-from utils import save_img, get_img, exists, list_files
+from src.utils import save_img, get_img, exists, list_files
 from argparse import ArgumentParser
 from collections import defaultdict
-import time
 import json
 import subprocess
 import numpy
+from StringIO import StringIO
 
 BATCH_SIZE = 4
 DEVICE = '/gpu:0'
@@ -147,6 +146,11 @@ def ffwd(data_in, paths_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):
                                          name='img_placeholder')
 
         preds = transform.net(img_placeholder)
+        preds = tf.cast(tf.clip_by_value(preds, 0, 255), dtype=tf.uint8)
+        preds = tf.unstack(preds)
+        for j in range(len(preds)):
+            preds[j] = tf.image.encode_jpeg(preds[j])
+
         saver = tf.train.Saver()
         if os.path.isdir(checkpoint_dir):
             ckpt = tf.train.get_checkpoint_state(checkpoint_dir)

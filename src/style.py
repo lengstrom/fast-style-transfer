@@ -30,7 +30,7 @@ def run(target, cluster_spec, is_chief, job_dir, content_weight, style_path, sty
     # reset the default graph to save RAM (the vgg network is quite heavy)
     tf.reset_default_graph()
 
-    # training hooks
+    # Evaluation Hook
     checkpoint_dir = os.path.join(job_dir, 'checkpoints')
     hooks = list()
     if is_chief and test_image_path:
