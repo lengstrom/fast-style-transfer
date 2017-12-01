@@ -1,8 +1,13 @@
 from __future__ import print_function
+
 import functools
-import vgg, pdb, time
-import tensorflow as tf, numpy as np, os
+import time
+
+import numpy as np
+import tensorflow as tf
+
 import transform
+import vgg
 from utils import get_img
 
 STYLE_LAYERS = ('relu1_1', 'relu2_1', 'relu3_1', 'relu4_1', 'relu5_1')
@@ -13,7 +18,7 @@ DEVICES = 'CUDA_VISIBLE_DEVICES'
 def optimize(content_targets, style_target, content_weight, style_weight,
              tv_weight, vgg_path, epochs=2, print_iterations=1000,
              batch_size=4, save_path='saver/fns.ckpt', slow=False,
-             learning_rate=1e-3, debug=False):
+             learning_rate=1e-3, debug=True):
     if slow:
         batch_size = 1
     mod = len(content_targets) % batch_size
@@ -54,7 +59,7 @@ def optimize(content_targets, style_target, content_weight, style_weight,
             )
             preds_pre = preds
         else:
-            preds = transform.net(X_content/255.0)
+            preds = transform.net(X_content / 255.0)
             preds_pre = vgg.preprocess(preds)
 
         net = vgg.net(vgg_path, preds_pre)
@@ -108,7 +113,7 @@ def optimize(content_targets, style_target, content_weight, style_weight,
                 assert X_batch.shape[0] == batch_size
 
                 feed_dict = {
-                   X_content:X_batch
+                   X_content: X_batch
                 }
 
                 train_step.run(feed_dict=feed_dict)
