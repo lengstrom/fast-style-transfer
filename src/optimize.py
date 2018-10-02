@@ -10,7 +10,7 @@ CONTENT_LAYER = 'relu4_2'
 DEVICES = 'CUDA_VISIBLE_DEVICES'
 
 # np arr, np arr
-def optimize(content_targets, style_target, content_weight, style_weight,
+def optimize(optimizer, op_iterations, content_targets, style_target, content_weight, style_weight,
              tv_weight, vgg_path, epochs=2, print_iterations=1000,
              batch_size=4, save_path='saver/fns.ckpt', slow=False,
              learning_rate=1e-3, debug=False):
@@ -88,7 +88,12 @@ def optimize(content_targets, style_target, content_weight, style_weight,
         loss = content_loss + style_loss + tv_loss
 
         # overall loss
-        train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss)
+        if optimizer == "l-bfgs" or optimizer == "lbfgs" or optimizer == "L-BFGS" or optimizer == "LBFGS":
+          train_step = tf.contrib.opt.ScipyOptimizerInterface(loss, method='L-BFGS-B', options={'maxiter': op_iterations,'disp': print_iterations})
+        elif optimizer.lcase == "adam" or optimizer.lcase == "ADAM":
+          train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss)
+        else:
+          print("OPTIMIZER " + optimizer + " NOT FOUND")
         sess.run(tf.global_variables_initializer())
         import random
         uid = random.randint(1, 100)
@@ -111,7 +116,13 @@ def optimize(content_targets, style_target, content_weight, style_weight,
                    X_content:X_batch
                 }
 
-                train_step.run(feed_dict=feed_dict)
+                if optimizer == "l-bfgs" or optimizer == "lbfgs" or optimizer == "L-BFGS" or optimizer == "LBFGS":
+                  train_step.minimize(sess, feed_dict=feed_dict)
+                elif optimizer.lcase == "adam" or optimizer.lcase == "ADAM":
+                  train_step.run(feed_dict=feed_dict)
+                else:
+                  print("OPTIMIZER " + optimizer + " NOT FOUND")
+                  
                 end_time = time.time()
                 delta_time = end_time - start_time
                 if debug:
