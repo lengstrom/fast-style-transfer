@@ -21,6 +21,9 @@ BATCH_SIZE = 4
 DEVICE = '/gpu:0'
 FRAC_GPU = 1
 
+OPTIMIZER = "ADAM"
+OP_ITERATIONS = 2000
+
 def build_parser():
     parser = ArgumentParser()
     parser.add_argument('--checkpoint-dir', type=str,
@@ -84,6 +87,16 @@ def build_parser():
                         dest='learning_rate',
                         help='learning rate (default %(default)s)',
                         metavar='LEARNING_RATE', default=LEARNING_RATE)
+    
+    parser.add_argument('--optimizer', type=str,
+                        dest='optimizer',
+                        help='Optimizer type, either ADAM or L-BFGS (default %(default)s)',
+                        metavar='OPTIMIZER', default=OPTIMIZER)
+    
+    parser.add_argument('--iterations', type=int,
+                        dest='op_iterations',
+                        help='Number of iterations per image (LBFGS ONLY) (default %(default)s)',
+                        metavar='OP_ITERATIONS', default=OP_ITERATIONS)
 
     return parser
 
@@ -95,6 +108,16 @@ def check_opts(opts):
         exists(opts.test, "test img not found!")
         exists(opts.test_dir, "test directory not found!")
     exists(opts.vgg_path, "vgg network data not found!")
+    if opts.optimizer == "l-bfgs" or opts.optimizer.lower == "lbfgs" or opts.optimizer == "L-BFGS" or opts.optimizer.lower == "LBFGS":
+        print("Using L-BFGS optimizer")
+        if opts.checkpoint_iterations > 10:
+            print("Checkpoint iterations are pretty high; L-BFGS is rather slow, and so saving more often is better.\nReccomended: CHECKPOINT_ITERATIONS = 10")
+    elif opts.optimizer == "adam" or opts.optimizer == "ADAM":        
+        print("Using ADAM optimizer")
+    else:
+      print("optimizer type: " + str(opts.optimizer) + " not found!")
+      end
+    assert opts.op_iterations > 0    
     assert opts.epochs > 0
     assert opts.batch_size > 0
     assert opts.checkpoint_iterations > 0
@@ -136,6 +159,8 @@ def main():
             kwargs['learning_rate'] = 1e1
 
     args = [
+        options.optimizer,
+        options.op_iterations,
         content_targets,
         style_target,
         options.content_weight,
