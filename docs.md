@@ -17,6 +17,8 @@
 - `--tv-weight`: Weight of total variation term in loss function. Default: `2e2`.
 - `--learning-rate`: Learning rate for optimizer. Default: `1e-3`.
 - `--slow`: For debugging loss function. Direct optimization on pixels using Gatys' approach. Uses `test` image as content value, `test_dir` for saving fully optimized images.
+- `--optimizer`: Change the optimizer to either L-BFGS or ADAM
+- `--iteraitons`: Changes the maximum number of iteraitons per training image for L-BFGS. Not necessary for ADAM.
 
 
 ## evaluate.py
