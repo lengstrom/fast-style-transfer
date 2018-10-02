@@ -55,7 +55,7 @@ Our implementation uses TensorFlow to train a fast style transfer network. We us
 
 ## Documentation
 ### Training Style Transfer Networks
-Use `style.py` to train a new style transfer network. Run `python style.py` to view all the possible parameters. Training takes 4-6 hours on a Maxwell Titan X. [More detailed documentation here](docs.md#stylepy). **Before you run this, you should run `setup.sh`**. Example usage:
+Use `style.py` to train a new style transfer network. Run `python style.py` to view all the possible parameters. Training on ADAM takes 4-6 hours on a Maxwell Titan X. [More detailed documentation here](docs.md#stylepy). **Before you run this, you should run `setup.sh`**. Example usage:
 
     python style.py --style path/to/style/img.jpg \
       --checkpoint-dir checkpoint/path \
@@ -64,6 +64,13 @@ Use `style.py` to train a new style transfer network. Run `python style.py` to v
       --content-weight 1.5e1 \
       --checkpoint-iterations 1000 \
       --batch-size 20
+      
+### Changing Optimizer
+Use the flag ``--optimizer`` to change the optimizer. Supports L-BFGS, but default is ADAM. ADAM uses less memory, but tends to require more tuning in parameters and may generate "grey spots". Training on L-BFGS takes ``TESTING`` hours on a Tesla K80.
+Example usage:
+
+    python style.py --optimizer L-BFGS \
+      --iterations 2000
 
 ### Evaluating Style Transfer Networks
 Use `evaluate.py` to evaluate a style transfer network. Run `python evaluate.py` to view all the possible parameters. Evaluation takes 100 ms per frame (when batch size is 1) on a Maxwell Titan X. [More detailed documentation here](docs.md#evaluatepy). Takes several seconds per frame on a CPU. **Models for evaluation are [located here](https://drive.google.com/drive/folders/0B9jhaT37ydSyRk9UX0wwX3BpMzQ?usp=sharing)**. Example usage:
@@ -106,6 +113,7 @@ You will need the following to run the above:
   - The project also borrowed some code from Anish's [Neural Style](https://github.com/anishathalye/neural-style/)
 - Some readme/docs formatting was borrowed from Justin Johnson's [Fast Neural Style](https://github.com/jcjohnson/fast-neural-style)
 - The image of the Stata Center at the very beginning of the README was taken by [Juan Paulo](https://juanpaulo.me/)
+- L-BFGS optimizer support and testing was developed by [Jess Fan](https://github.com/JEF1056)
 
 ### Related Work
 - Michael Ramos ported this network [to use CoreML on iOS](https://medium.com/@rambossa/diy-prisma-fast-style-transfer-app-with-coreml-and-tensorflow-817c3b90dacd)
