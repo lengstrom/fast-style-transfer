@@ -1,4 +1,7 @@
 import scipy.misc, numpy as np, os, sys
+from skimage.transform import resize
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 def save_img(out_path, img):
     img = np.clip(img, 0, 255).astype(np.uint8)
@@ -17,7 +20,8 @@ def get_img(src, img_size=False):
    if not (len(img.shape) == 3 and img.shape[2] == 3):
        img = np.dstack((img,img,img))
    if img_size != False:
-       img = scipy.misc.imresize(img, img_size)
+       img = resize(img,img_size)
+#       img = scipy.misc.imresize(img, img_size)
    return img
 
 def exists(p, msg):
@@ -30,4 +34,3 @@ def list_files(in_path):
         break
 
     return files
-
