@@ -13,7 +13,7 @@ DEVICES = 'CUDA_VISIBLE_DEVICES'
 def optimize(content_targets, style_target, content_weight, style_weight,
              tv_weight, vgg_path, epochs=2, print_iterations=1000,
              batch_size=4, save_path='saver/fns.ckpt', slow=False,
-             learning_rate=1e-3, debug=False):
+             learning_rate=1e-3, debug=False, use_tiny_net=False):
     if slow:
         batch_size = 1
     mod = len(content_targets) % batch_size
@@ -54,7 +54,10 @@ def optimize(content_targets, style_target, content_weight, style_weight,
             )
             preds_pre = preds
         else:
-            preds = transform.net(X_content/255.0)
+            if use_tiny_net:
+                preds = transform.tiny_net(X_content/255.0)
+            else:
+                preds = transform.net(X_content/255.0)
             preds_pre = vgg.preprocess(preds)
 
         net = vgg.net(vgg_path, preds_pre)
@@ -85,35 +88,87 @@ def optimize(content_targets, style_target, content_weight, style_weight,
         x_tv = tf.nn.l2_loss(preds[:,:,1:,:] - preds[:,:,:batch_shape[2]-1,:])
         tv_loss = tv_weight*2*(x_tv/tv_x_size + y_tv/tv_y_size)/batch_size
 
+        # overall loss
         loss = content_loss + style_loss + tv_loss
 
-        # overall loss
-        train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss)
+        # add summary for each loss
+        tf.summary.scalar('content_loss', content_loss)
+        tf.summary.scalar('style_loss', style_loss)
+        tf.summary.scalar('tv_loss', tv_loss)
+        tf.summary.scalar('total_loss', loss)
+
+        global_step = tf.train.get_or_create_global_step()
+        trainable_variables = tf.trainable_variables()
+        grads = tf.gradients(loss, trainable_variables)
+
+        optimizer = tf.train.AdamOptimizer(learning_rate)
+        train_op = optimizer.apply_gradients(zip(grads, trainable_variables), global_step=global_step, name='train_step')
+
+        merged_summary_op = tf.summary.merge_all()
+        summary_writer = tf.summary.FileWriter(log_dir, graph=tf.get_default_graph())
+
         sess.run(tf.global_variables_initializer())
+
+        saver = tf.train.Saver()
+        checkpoint_exists = True
+
+        try:
+            ckpt_state = tf.train.get_checkpoint_state(save_path)
+        except tf.errors.OutOfRangeError as e:
+            print('Cannot restore checkpoint: %s' % e)
+            checkpoint_exists = False
+        if not (ckpt_state and ckpt_state.model_checkpoint_path):
+            print('No model to restore at %s' % save_path)
+            checkpoint_exists = False
+
+        if checkpoint_exists:
+            print('Loading checkpoint %s' % ckpt_state.model_checkpoint_path)
+            tf.logging.info('Loading checkpoint %s' % ckpt_state.model_checkpoint_path)
+            saver.restore(sess, ckpt_state.model_checkpoint_path)
+
+        num_examples = len(content_targets)
+
+        if checkpoint_exists:
+            iterations = sess.run(global_step)
+            epoch = (iterations * batch_size)
+            iterations = iterations - epoch * (num_examples // batch_size)
+        else:
+            epoch = 0
+            iterations = 0
+
         import random
         uid = random.randint(1, 100)
-        print("UID: %s" % uid)
-        for epoch in range(epochs):
-            num_examples = len(content_targets)
-            iterations = 0
+        print('UID: %s' % uid)
+        print('content_weight : %g, style_weight : %g, tv_weight: %g'
+              % (content_weight, style_weight, tv_weight))
+
+        while epoch < epochs:
             while iterations * batch_size < num_examples:
                 start_time = time.time()
                 curr = iterations * batch_size
                 step = curr + batch_size
+
                 X_batch = np.zeros(batch_shape, dtype=np.float32)
                 for j, img_p in enumerate(content_targets[curr:step]):
-                   X_batch[j] = get_img(img_p, (256,256,3)).astype(np.float32)
-
+                    X_batch[j] = get_img(img_p, (256, 256, 3)).astype(np.float32)
                 iterations += 1
                 assert X_batch.shape[0] == batch_size
-
-                feed_dict = {
-                   X_content:X_batch
+                train_feed_dict = {
+                    X_content: X_batch
                 }
 
-                train_step.run(feed_dict=feed_dict)
+                _, summary, L_total, L_content, L_style, L_tv, step = sess.run(
+                    [train_op, merged_summary_op, loss, content_loss, style_loss, tv_loss, global_step],
+                    feed_dict=train_feed_dict)
+                print('epoch : %d, iter : %4d,' % (epoch, step),
+                      'L_total : %g, L_content : %g, L_style : %g, L_tv : %g'
+                      % (L_total, L_content, L_style, L_tv))
+
+                summary_writer.add_summary(summary, iterations)
+
                 end_time = time.time()
                 delta_time = end_time - start_time
+
                 if debug:
                     print("UID: %s, batch time: %s" % (uid, delta_time))
                 is_print_iter = int(iterations) % print_iterations == 0
@@ -127,15 +182,17 @@ def optimize(content_targets, style_target, content_weight, style_weight,
                        X_content:X_batch
                     }
 
-                    tup = sess.run(to_get, feed_dict = test_feed_dict)
+                    tup = sess.run(to_get, feed_dict=test_feed_dict)
                     _style_loss,_content_loss,_tv_loss,_loss,_preds = tup
                     losses = (_style_loss, _content_loss, _tv_loss, _loss)
                     if slow:
                        _preds = vgg.unprocess(_preds)
                     else:
-                       saver = tf.train.Saver()
-                       res = saver.save(sess, save_path)
+                        res = saver.save(sess, save_path + '/fns.ckpt')
                     yield(_preds, losses, iterations, epoch)
+            epoch += 1
+            iterations = 0
+
 
 def _tensor_size(tensor):
     from operator import mul
