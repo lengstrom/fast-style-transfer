@@ -9,10 +9,14 @@ STYLE_LAYERS = ('relu1_1', 'relu2_1', 'relu3_1', 'relu4_1', 'relu5_1')
 CONTENT_LAYER = 'relu4_2'
 DEVICES = 'CUDA_VISIBLE_DEVICES'
 
+
 # np arr, np arr
-def optimize(content_targets, style_target, content_weight, style_weight,
-             tv_weight, vgg_path, epochs=2, print_iterations=1000,
-             batch_size=4, save_path='saver/fns.ckpt', slow=False,
+def optimize(content_targets, style_target,
+             content_weight, style_weight, tv_weight,
+             vgg_path, epochs=2, print_iterations=1000,
+             batch_size=4,
+             save_path='saver', log_dir='saver/logs',
+             slow=False,
              learning_rate=1e-3, debug=False, use_tiny_net=False):
     if slow:
         batch_size = 1
@@ -23,7 +27,7 @@ def optimize(content_targets, style_target, content_weight, style_weight,
 
     style_features = {}
 
-    batch_shape = (batch_size,256,256,3)
+    batch_shape = (batch_size, 256, 256, 3)
     style_shape = (1,) + style_target.shape
     print(style_shape)
 
@@ -130,7 +134,7 @@ def optimize(content_targets, style_target, content_weight, style_weight,
 
         if checkpoint_exists:
             iterations = sess.run(global_step)
-            epoch = (iterations * batch_size)
+            epoch = (iterations * batch_size) // num_examples
             iterations = iterations - epoch * (num_examples // batch_size)
         else:
             epoch = 0
@@ -138,10 +142,12 @@ def optimize(content_targets, style_target, content_weight, style_weight,
 
         import random
         uid = random.randint(1, 100)
+
         print('UID: %s' % uid)
+        print('EPOCH: %s / %s' % (epoch, epochs))
         print('content_weight : %g, style_weight : %g, tv_weight: %g'
               % (content_weight, style_weight, tv_weight))
-
+        epoch += 1
         while epoch < epochs:
             while iterations * batch_size < num_examples:
                 start_time = time.time()

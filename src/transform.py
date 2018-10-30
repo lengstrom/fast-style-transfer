@@ -2,6 +2,7 @@ import tensorflow as tf, pdb
 
 WEIGHTS_INIT_STDEV = .1
 
+
 def net(image):
     conv1 = _conv_layer(image, 32, 9, 1)
     conv2 = _conv_layer(conv1, 64, 3, 2)
@@ -22,8 +23,8 @@ def tiny_net(image):
     conv1 = _conv_layer(image, 8, 5, 1)
     conv2 = _conv_layer(conv1, 16, 3, 2)
     conv3 = _conv_layer(conv2, 16, 3, 2)
-    resid1 = _residual_block(conv3, 8, 16, 1, 3)
-    resid2 = _residual_block(resid1, 8, 16, 1, 3)
+    resid1 = _residual_block(conv3, 16, 16, 3, 3)
+    resid2 = _residual_block(resid1, 16, 16, 3, 3)
     conv_t1 = _conv_tranpose_layer(resid2, 16, 3, 2)
     conv_t2 = _conv_tranpose_layer(conv_t1, 8, 3, 2)
     conv_t3 = _conv_layer(conv_t2, 3, 5, 1, relu=False)

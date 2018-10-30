@@ -12,28 +12,33 @@ STYLE_WEIGHT = 1e2
 TV_WEIGHT = 2e2
 
 LEARNING_RATE = 1e-3
-NUM_EPOCHS = 2
-CHECKPOINT_DIR = 'checkpoints'
-LOG_DIR = 'log'
-CHECKPOINT_ITERATIONS = 2000
-VGG_PATH = 'data/imagenet-vgg-verydeep-19.mat'
-TRAIN_PATH = 'data/train2014'
-BATCH_SIZE = 4
-DEVICE = '/gpu:0'
+NUM_EPOCHS = 3
+CHECKPOINT_DIR = 'train/data/ckpts'
+LOG_DIR = 'train/log'
+CHECKPOINT_ITERATIONS = 10
+VGG_PATH = 'train/data/imagenet-vgg-verydeep-19.mat'
+TRAIN_PATH = 'train/data/train2014'
+BATCH_SIZE = 1
+DEVICE = '/cpu:0'
 FRAC_GPU = 1
 
-NUM_STEPS = 1
+NUM_STEPS = 3
 
 STEP_CONTENT_WEIGHTS = '1, 1.5, 7.5'
 STEP_STYLE_WEIGHTS = '0, 10, 100'
 STEP_TV_WEIGHTS = '0, 20, 200'
+
+MODEL_PATH = 'train/data/out_models/output_graph.pb'
+OUTPUT_NODE_NAME = 'add_22'
+
+STYLE_PATH = 'train/data/styles/la_muse.jpg'
 
 
 def build_parser():
     parser = ArgumentParser()
     parser.add_argument('--checkpoint-dir', type=str,
                         dest='checkpoint_dir', help='dir to save checkpoint in',
-                        metavar='CHECKPOINT_DIR', required=True)
+                        metavar='CHECKPOINT_DIR', default=CHECKPOINT_DIR)
 
     parser.add_argument('--log-dir', type=str,
                         dest='log_dir', help='dir to save logs in',
@@ -41,7 +46,7 @@ def build_parser():
 
     parser.add_argument('--style', type=str,
                         dest='style', help='style image path',
-                        metavar='STYLE', required=True)
+                        metavar='STYLE', default=STYLE_PATH)
 
     parser.add_argument('--train-path', type=str,
                         dest='train_path', help='path to training images folder',
@@ -54,6 +59,18 @@ def build_parser():
     parser.add_argument('--test-dir', type=str,
                         dest='test_dir', help='test image save dir',
                         metavar='TEST_DIR', default=False)
+
+    parser.add_argument('--model-path', type=str,
+                        dest='model_path', help='path to save pb file',
+                        metavar='MODEL_PATH', default=MODEL_PATH)
+
+    parser.add_argument('--output-node-name', type=str,
+                        dest='output_node_name', help='output node name',
+                        metavar='OUTPUT_NODE_NAME', default=OUTPUT_NODE_NAME)
+
+    parser.add_argument('--use-tiny-net', dest='use_tiny_net', action='store_true',
+                        help='use tiny net defined in transform.py or not',
+                        default=False)
 
     parser.add_argument('--slow', dest='slow', action='store_true',
                         help='gatys\' approach (for debugging, not supported)',
@@ -188,8 +205,10 @@ def main():
             "epochs": epochs,
             "print_iterations": options.checkpoint_iterations,
             "batch_size": options.batch_size,
-            "save_path": os.path.join(options.checkpoint_dir, 'fns.ckpt'),
-            "learning_rate": options.learning_rate
+            "save_path": os.path.abspath(options.checkpoint_dir),
+            "log_dir": os.path.abspath(options.log_dir),
+            "learning_rate": options.learning_rate,
+            "use_tiny_net": options.use_tiny_net,
         }
 
         if options.slow:
@@ -217,14 +236,17 @@ def main():
                 assert options.test_dir != False
                 preds_path = '%s/%s_%s.png' % (options.test_dir,epoch,i)
                 if not options.slow:
-                    ckpt_dir = os.path.dirname(options.checkpoint_dir)
-                    evaluate.ffwd_to_img(options.test,preds_path,
-                                         options.checkpoint_dir)
+                    evaluate.ffwd_to_img(options.test,
+                                         preds_path,
+                                         options.checkpoint_dir,
+                                         options.model_path,
+                                         use_tiny_net=options.use_tiny_net)
                 else:
                     save_img(preds_path, img)
     ckpt_dir = options.checkpoint_dir
     cmd_text = 'python evaluate.py --checkpoint %s ...' % ckpt_dir
     print("Training complete. For evaluation:\n    `%s`" % cmd_text)
+
 
 if __name__ == '__main__':
     main()
