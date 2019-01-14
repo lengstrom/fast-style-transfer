@@ -3,7 +3,7 @@
 `style.py` 训练可将艺术品画风迁移至图片的网络
 
 **参数**
-- `--checkpoint-dir`: 保存模型文件的目录，必选
+- `--checkpoint-dir`: 保存模型文件的目录，必选（注：在训练 TensorFlow 模型时，每迭代若干轮需要保存一次权值到磁盘，称为“checkpoint”）
 - `--style`: 画风图片路径，必选
 - `--train-path`: 训练图像目录. 默认: `data/train2014`.
 - `--test`: Path to content image to test network on at at every checkpoint iteration. Default: no image.
