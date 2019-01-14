@@ -1,8 +1,8 @@
 ## style.py 
 
-`style.py` trains networks that can transfer styles from artwork into images.
+`style.py` 训练可将艺术品画风迁移至图片的网络
 
-**Flags**
+**参数**
 - `--checkpoint-dir`: Directory to save checkpoint in. Required.
 - `--style`: Path to style image. Required.
 - `--train-path`: Path to training images folder. Default: `data/train2014`.
