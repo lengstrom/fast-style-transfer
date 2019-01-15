@@ -8,14 +8,14 @@
 - `--train-path`: 训练集数据文件路径，默认: `data/train2014`（注：train2014 为微软2014年发布的图像识别、分割和图像语义数据集）
 - `--test`: 每若干轮迭代结束后，用于测试神经网络渲染效果的图片路径，默认值为空
 - `--test-dir`: 神经网络测试结果（渲染后的图片）的存储目录，如果 `--test` 已赋值，则该项必选
-- `--epochs`: 神经网络训练周期，默认值：`2`
-- `--batch_size`: 迭代的批量大小，默认值：`4`
-- `--checkpoint-iterations`: 每两次checkpoint间的迭代次数，默认值：`2000`
+- `--epochs`: 神经网络训练的周期数，默认值：`2`（注：1个epoch表示把训练集中所有样本完整过一遍）
+- `--batch_size`: 一次迭代使用的样本数量，默认值：`4`
+- `--checkpoint-iterations`: 每两次checkpoint间的迭代次数，默认值：`2000`（注：每跑完一个batch都要更新参数，这个过程叫一个iteration）
 - `--vgg-path`: VGG19网络（默认）的matlab数据文件路径，（如想尝试其他损失网络，如：VGG16，则可传入VGG16对应的matlab数据文件路径），默认值：`data/imagenet-vgg-verydeep-19.mat`
 - `--content-weight`: 损失网络中的内容权重，默认值：`7.5e0`
 - `--style-weight`: 损失网络中的风格权重，默认值：`1e2`
 - `--tv-weight`: 损失网络中总变异项的权重，默认值：`2e2`
-- `--learning-rate`: 优化器的学习率，默认值：`1e-3`
+- `--learning-rate`: 优化器的学习率，默认值：`1e-3`（注：learning rate是调整神经网络输入权重的一种方法。如果感知机预测正确，则对应的输入权重不需要调整，否则要根据损失网络调整感知机，而这个调整幅度大小叫learning rate，也就是在调整的基础上，增加一个比值）
 - `--slow`: 该参数为debug损失网络而设置，采用Gatys论文中的方法，直接在像素层面渲染，`test`参数对应的文件作为debug内容，`test_dir`对应的目录用来保存debug结果
 
 
