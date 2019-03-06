@@ -6,7 +6,7 @@ import transform
 from utils import get_img
 
 STYLE_LAYERS = ('conv1_2', 'conv2_2', 'conv3_3', 'conv4_1', 'conv5_1')
-CONTENT_LAYER = 'conv4_1'
+CONTENT_LAYER = 'conv3_2'
 DEVICES = 'CUDA_VISIBLE_DEVICES'
 
 # np arr, np arr
