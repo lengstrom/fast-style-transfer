@@ -5,8 +5,8 @@ import tensorflow as tf, numpy as np, os
 import transform
 from utils import get_img
 
-STYLE_LAYERS = ('relu1_1', 'relu2_1', 'relu3_1', 'relu4_1', 'relu5_1')
-CONTENT_LAYER = 'conv4_2'
+STYLE_LAYERS = ('conv1_2', 'conv2_2', 'conv3_3', 'conv4_3')
+CONTENT_LAYER = 'conv3_3'
 DEVICES = 'CUDA_VISIBLE_DEVICES'
 
 # np arr, np arr
