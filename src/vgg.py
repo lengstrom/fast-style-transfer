@@ -5,7 +5,8 @@ import numpy as np
 import scipy.io
 import pdb
 
-MEAN_PIXEL = np.array([ 123.68 ,  116.779,  103.939])
+#MEAN_PIXEL = np.array([ 123.68 ,  116.779,  103.939])
+MEAN_PIXEL = np.array([123, 117, 104])
 
 def net(data_path, input_image):
     layers = (
