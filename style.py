@@ -7,13 +7,13 @@ from argparse import ArgumentParser
 from utils import save_img, get_img, exists, list_files
 import evaluate
 
-#CONTENT_WEIGHT = 7.5e0
-#STYLE_WEIGHT = 1e2
-#TV_WEIGHT = 2e2
-
-CONTENT_WEIGHT = 1e0
-STYLE_WEIGHT = 5e2
+CONTENT_WEIGHT = 7.5e0
+STYLE_WEIGHT = 1e2
 TV_WEIGHT = 2e2
+
+#CONTENT_WEIGHT = 1e0
+#STYLE_WEIGHT = 5e2
+#TV_WEIGHT = 2e2
 
 #LEARNING_RATE = 1e-3
 LEARNING_RATE = 1e-2
