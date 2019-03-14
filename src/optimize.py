@@ -87,10 +87,6 @@ def optimize(content_targets, style_target, content_weight, style_weight,
         # overall loss      
         
         #train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss)
-        feed_dict = {
-            X_content:X_batch
-        }
-        
         sess.run(tf.global_variables_initializer())
         train_step = tf.contrib.opt.ScipyOptimizerInterface(loss, method='L-BFGS-B', options={'maxiter': 500, 'disp': True}).minimize(session=sess, feed_dict=feed_dict)
         
@@ -111,9 +107,9 @@ def optimize(content_targets, style_target, content_weight, style_weight,
                 iterations += 1
                 assert X_batch.shape[0] == batch_size
 
-                #feed_dict = {
-                #   X_content:X_batch
-                #}
+                feed_dict = {
+                   X_content:X_batch
+                }
 
                 #train_step.run(feed_dict=feed_dict)
                 train_step.run()
