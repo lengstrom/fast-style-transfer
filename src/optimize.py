@@ -15,7 +15,7 @@ DEVICES = 'CUDA_VISIBLE_DEVICES'
 def optimize(content_targets, style_target, content_weight, style_weight,
              tv_weight, vgg_path, epochs=2, print_iterations=1000,
              batch_size=4, save_path='saver/fns.ckpt', slow=False,
-             learning_rate=1e-3, debug=False):
+             learning_rate=1e-3, debug=True):
 
     style_features = {}
 
@@ -87,7 +87,7 @@ def optimize(content_targets, style_target, content_weight, style_weight,
         # overall loss      
         
         #train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss)
-        train_step = tf.contrib.opt.ScipyOptimizerInterface(loss, method='L-BFGS-B', options={'maxiter': 500, 'disp': true})
+        train_step = tf.contrib.opt.ScipyOptimizerInterface(loss, method='L-BFGS-B', options={'maxiter': 500, 'disp': True})
         sess.run(tf.global_variables_initializer())
         import random
         uid = random.randint(1, 100)
