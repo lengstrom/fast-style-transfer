@@ -19,8 +19,8 @@ def optimize(content_targets, style_target, content_weight, style_weight,
 
     style_features = {}
 
-    #batch_shape = (batch_size,256,256,3)
-    batch_shape = (batch_size,512,512,3)
+    batch_shape = (batch_size,256,256,3)
+    #batch_shape = (batch_size,512,512,3)
     style_shape = (1,) + style_target.shape
     print(style_shape)
 
