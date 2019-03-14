@@ -87,7 +87,7 @@ def optimize(content_targets, style_target, content_weight, style_weight,
         # overall loss      
         
         #train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss)
-        train_step = tf.contrib.opt.ScipyOptimizerInterface(loss, method='L-BFGS-B', options={'maxiter': 500, 'disp': True})
+        train_step = tf.contrib.opt.ScipyOptimizerInterface(loss, method='L-BFGS-B', options={'maxiter': 500, 'disp': True}).minimize(sess)
         sess.run(tf.global_variables_initializer())
         import random
         uid = random.randint(1, 100)
