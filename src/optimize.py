@@ -87,7 +87,7 @@ def optimize(content_targets, style_target, content_weight, style_weight,
         # overall loss
         
         if optimizer.lower()=="adam":
-          print("Optimizing with ADAM")
+            print("Optimizing with ADAM")
             train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss)
             sess.run(tf.global_variables_initializer())
         elif optimizer.lower()=="l-bfgs" or optimizer.lower()=="lbfgs":
