@@ -150,9 +150,9 @@ def main():
         "print_iterations":options.checkpoint_iterations,
         "batch_size":options.batch_size,
         "save_path":os.path.join(options.checkpoint_dir,'fns.ckpt'),
-        "learning_rate":options.learning_rate
-        "debug":options.debug
-        "optimizer":options.optimizer
+        "learning_rate":options.learning_rate,
+        "debug":options.debug,
+        "optimizer":options.optimizer,
         "opt_iter":options.opt_iter
     }
 
