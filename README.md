@@ -66,7 +66,7 @@ Example usage:
       --checkpoint-iterations 1000 \
       --batch-size 20
 ```
-Style.py also now supports the L-BFGS optimizer, along with the ADAM optimizer. <br>
+Style.py also now supports the L-BFGS optimizer, along with the ADAM optimizer. Training takes 6-8 hours on a Tesla P80. **Before you run this, you should run `setup.sh`** <br>
 Example usage:
 ```
      python style.py --style path/to/style/img.jpg \
@@ -103,7 +103,7 @@ You will need the following to run the above:
   - All the required NVIDIA software to run TF on a GPU (cuda, etc)
 - ffmpeg 3.1.3 if you want to stylize video
 
-###Notes (3/14/2019)
+### Notes (3/14/2019)
 This repo is differant from Logan's also in these ways:
 - Learning rate default is now `1e-2` instead of `1e-3`
 - Instead of using the layer `relu4_2`, this repo uses `conv4_2`
