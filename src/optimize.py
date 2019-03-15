@@ -93,7 +93,7 @@ def optimize(content_targets, style_target, content_weight, style_weight,
             sess.run(tf.global_variables_initializer())
         elif optimizer.lower()=="l-bfgs" or optimizer.lower()=="lbfgs":
             sess.run(tf.global_variables_initializer())
-        `   train_step = tf.contrib.opt.ScipyOptimizerInterface(loss, method='L-BFGS-B', options={'maxiter': opt_iter, 'disp': debug})
+            train_step = tf.contrib.opt.ScipyOptimizerInterface(loss, method='L-BFGS-B', options={'maxiter': opt_iter, 'disp': debug})
         else:
             assert (optimizer.lower in listofopts), "Optimizer is not implemented."
         
