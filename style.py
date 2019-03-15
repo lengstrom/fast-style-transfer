@@ -25,6 +25,9 @@ TRAIN_PATH = 'data/train2014'
 BATCH_SIZE = 4
 DEVICE = '/gpu:0'
 FRAC_GPU = 1
+OPTIMIZER = "adam"
+OPT_ITER = 50
+DEBUG=False
 
 def build_parser():
     parser = ArgumentParser()
@@ -89,6 +92,21 @@ def build_parser():
                         dest='learning_rate',
                         help='learning rate (default %(default)s)',
                         metavar='LEARNING_RATE', default=LEARNING_RATE)
+    
+    parser.add_argument('--debug', type=float,
+                        dest='debug',
+                        help='debug pring messages (default %(default)s)',
+                        metavar='DEBUG', default=DEBUG)
+    
+    parser.add_argument('--optimizer', type=float,
+                        dest='optimizer',
+                        help='ADAM or L-BFGS optimizer (default %(default)s)',
+                        metavar='OPTIMIZER', default=OPTIMIZER)
+    
+    parser.add_argument('--optimizer-iterations', type=float,
+                        dest='opt_iter',
+                        help='number of iterations l-bfgs optimizer uses per iteration (default %(default)s)',
+                        metavar='OPT_ITER', default=OPT_ITER)
 
     return parser
 
