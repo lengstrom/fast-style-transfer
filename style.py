@@ -126,6 +126,7 @@ def check_opts(opts):
     assert opts.style_weight >= 0
     assert opts.tv_weight >= 0
     assert opts.learning_rate >= 0
+    assert opts.opt_iter >= 0
 
 def _get_files(img_dir):
     files = list_files(img_dir)
@@ -150,6 +151,9 @@ def main():
         "batch_size":options.batch_size,
         "save_path":os.path.join(options.checkpoint_dir,'fns.ckpt'),
         "learning_rate":options.learning_rate
+        "debug":options.debug
+        "optimizer":options.optimizer
+        "opt_iter":options.opt_iter
     }
 
     if options.slow:
