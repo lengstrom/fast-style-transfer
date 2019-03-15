@@ -103,7 +103,7 @@ def build_parser():
                         help='ADAM or L-BFGS optimizer (default %(default)s)',
                         metavar='OPTIMIZER', default=OPTIMIZER)
     
-    parser.add_argument('--optimizer-iterations', type=str,
+    parser.add_argument('--optimizer-iterations', type=int,
                         dest='opt_iter',
                         help='number of iterations l-bfgs optimizer uses per iteration (default %(default)s)',
                         metavar='OPT_ITER', default=OPT_ITER)
