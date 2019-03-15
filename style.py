@@ -93,17 +93,17 @@ def build_parser():
                         help='learning rate (default %(default)s)',
                         metavar='LEARNING_RATE', default=LEARNING_RATE)
     
-    parser.add_argument('--debug', type=float,
+    parser.add_argument('--debug', type=bool,
                         dest='debug',
                         help='debug pring messages (default %(default)s)',
                         metavar='DEBUG', default=DEBUG)
     
-    parser.add_argument('--optimizer', type=float,
+    parser.add_argument('--optimizer', type=str,
                         dest='optimizer',
                         help='ADAM or L-BFGS optimizer (default %(default)s)',
                         metavar='OPTIMIZER', default=OPTIMIZER)
     
-    parser.add_argument('--optimizer-iterations', type=float,
+    parser.add_argument('--optimizer-iterations', type=str,
                         dest='opt_iter',
                         help='number of iterations l-bfgs optimizer uses per iteration (default %(default)s)',
                         metavar='OPT_ITER', default=OPT_ITER)
