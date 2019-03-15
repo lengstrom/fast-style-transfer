@@ -87,9 +87,11 @@ def optimize(content_targets, style_target, content_weight, style_weight,
         # overall loss
         
         if optimizer.lower()=="adam":
+          print("Optimizing with ADAM")
             train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss)
             sess.run(tf.global_variables_initializer())
         elif optimizer.lower()=="l-bfgs" or optimizer.lower()=="lbfgs":
+            print("Optimizing with L-BFGS")
             sess.run(tf.global_variables_initializer())
             train_step = tf.contrib.opt.ScipyOptimizerInterface(loss, method='L-BFGS-B', options={'maxiter': opt_iter, 'disp': debug})
         else:
