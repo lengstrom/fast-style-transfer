@@ -84,9 +84,7 @@ def optimize(content_targets, style_target, content_weight, style_weight,
 
         loss = content_loss + style_loss + tv_loss
 
-        # overall loss      
-        
-        listofopts = ["adam", "l-bfgs", "lbfgs"]
+        # overall loss
         
         if optimizer.lower()=="adam":
             train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss)
@@ -95,7 +93,7 @@ def optimize(content_targets, style_target, content_weight, style_weight,
             sess.run(tf.global_variables_initializer())
             train_step = tf.contrib.opt.ScipyOptimizerInterface(loss, method='L-BFGS-B', options={'maxiter': opt_iter, 'disp': debug})
         else:
-            assert (optimizer.lower in listofopts), "Optimizer is not implemented."
+            print("Optimizer is not implemented.")
         
         import random
         uid = random.randint(1, 100)
@@ -123,7 +121,7 @@ def optimize(content_targets, style_target, content_weight, style_weight,
                 elif optimizer.lower()=="l-bfgs" or optimizer.lower()=="lbfgs":
                     train_step.minimize(session=sess, feed_dict=feed_dict)
                 else:
-                    assert (optimizer.lower in listofopts), "Optimizer is not implemented."
+                    print("Optimizer is not implemented.")
                   
                 end_time = time.time()
                 delta_time = end_time - start_time
