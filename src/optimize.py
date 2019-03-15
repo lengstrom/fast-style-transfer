@@ -15,7 +15,7 @@ DEVICES = 'CUDA_VISIBLE_DEVICES'
 def optimize(content_targets, style_target, content_weight, style_weight,
              tv_weight, vgg_path, epochs=2, print_iterations=1000,
              batch_size=4, save_path='saver/fns.ckpt', slow=False,
-             learning_rate=1e-3, debug=True):
+             learning_rate=1e-3, debug=False, optimizer='adam', opt_iter=50):
   
     style_features = {}
 
@@ -86,9 +86,16 @@ def optimize(content_targets, style_target, content_weight, style_weight,
 
         # overall loss      
         
-        #train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss)
-        sess.run(tf.global_variables_initializer())
-        train_step = tf.contrib.opt.ScipyOptimizerInterface(loss, method='L-BFGS-B', options={'maxiter': 500, 'disp': False})
+        listofopts = ["adam", "l-bfgs", "lbfgs"]
+        
+        if optimizer.lower()=="adam":
+            train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss)
+            sess.run(tf.global_variables_initializer())
+        elif optimizer.lower()=="l-bfgs" or optimizer.lower()=="lbfgs":
+            sess.run(tf.global_variables_initializer())
+        `   train_step = tf.contrib.opt.ScipyOptimizerInterface(loss, method='L-BFGS-B', options={'maxiter': opt_iter, 'disp': debug})
+        else:
+            assert (optimizer.lower in listofopts), "Optimizer is not implemented."
         
         import random
         uid = random.randint(1, 100)
@@ -110,9 +117,14 @@ def optimize(content_targets, style_target, content_weight, style_weight,
                 feed_dict = {
                    X_content:X_batch
                 }
-
-                #train_step.run(feed_dict=feed_dict)
-                train_step.minimize(session=sess, feed_dict=feed_dict)
+                
+                if optimizer.lower()=="adam":
+                    train_step.run(feed_dict=feed_dict)
+                elif optimizer.lower()=="l-bfgs" or optimizer.lower()=="lbfgs":
+                    train_step.minimize(session=sess, feed_dict=feed_dict)
+                else:
+                    assert (optimizer.lower in listofopts), "Optimizer is not implemented."
+                  
                 end_time = time.time()
                 delta_time = end_time - start_time
                 if debug:
