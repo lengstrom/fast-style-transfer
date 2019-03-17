@@ -9,4 +9,3 @@ RUN add-apt-repository ppa:mc3man/trusty-media \
 && apt-get install -y libcurl4-openssl-dev \
 && apt-get install -y ffmpeg
 RUN pip install -r requirements.txt
-RUN chmod +x stylize.sh
