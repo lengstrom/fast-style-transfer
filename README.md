@@ -63,11 +63,17 @@ Our implementation uses TensorFlow to train a fast style transfer network. We us
 
 Example usage:
 
-    docker run -it -v $(pwd)/output:/src/output \
-    -e MODEL_PATH="./models/scream.ckpt" \
-    -e INPUT_PATH="./video/sample.mp4" \
-    -e OUTPUT_PATH="./output/stylized.mp4" \ 
+    docker run -it -v $(pwd)/out:/src/out \
     my-container bash
+
+    root@...:/src# python transform_video.py --in-path path/to/input
+       vid.mp4 \
+      --checkpoint path/to/style/model.ckpt \
+      --out-path out/video.mp4 \
+      --device /gpu:0 \
+      --batch-size 4
+
+will write a stylized `video.mp4` to your host `out` directory.
 
 ### Training Style Transfer Networks
 Use `style.py` to train a new style transfer network. Run `python style.py` to view all the possible parameters. Training takes 4-6 hours on a Maxwell Titan X. [More detailed documentation here](docs.md#stylepy). **Before you run this, you should run `setup.sh`**. Example usage:
