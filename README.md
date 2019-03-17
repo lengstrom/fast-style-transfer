@@ -54,6 +54,21 @@ We added styles from various paintings to a photo of Chicago. Click on thumbnail
 Our implementation uses TensorFlow to train a fast style transfer network. We use roughly the same transformation network as described in Johnson, except that batch normalization is replaced with Ulyanov's instance normalization, and the scaling/offset of the output `tanh` layer is slightly different. We use a loss function close to the one described in Gatys, using VGG19 instead of VGG16 and typically using "shallower" layers than in Johnson's implementation (e.g. we use `relu1_1` rather than `relu1_2`). Empirically, this results in larger scale style features in transformations.
 
 ## Documentation
+
+### Dockerized environment
+
+`Dockerfile.cpu` will build a container with all [requirements](#requirements) for training and stylizing video on a cpu.
+
+`Dockerfile.gpu` provides the same setup, but is based on `tensorflow-gpu` which also installs dependecies for running against an nvidia gpu. To access your host GPU from a container, use `nvidia-docker` to run the container. 
+
+Example usage:
+
+    docker run -it -v $(pwd)/output:/src/output \
+    -e MODEL_PATH="./models/scream.ckpt" \
+    -e INPUT_PATH="./video/sample.mp4" \
+    -e OUTPUT_PATH="./output/stylized.mp4" \ 
+    my-container bash
+
 ### Training Style Transfer Networks
 Use `style.py` to train a new style transfer network. Run `python style.py` to view all the possible parameters. Training takes 4-6 hours on a Maxwell Titan X. [More detailed documentation here](docs.md#stylepy). **Before you run this, you should run `setup.sh`**. Example usage:
 

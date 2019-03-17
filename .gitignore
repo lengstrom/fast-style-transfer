@@ -1,4 +1,9 @@
-t Byte-compiled / optimized / DLL files
+.DS_Store
+models/
+output/
+video/
+input/
+
 deps.txt
 archive
 saver

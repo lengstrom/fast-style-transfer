@@ -1,0 +1,12 @@
+FROM tensorflow/tensorflow:0.12.0 AS tensorflow
+WORKDIR /src
+ENV DEBIAN_FRONTEND noninteractive
+ENV PYCURL_SSL_LIBRARY=openssl
+COPY . .
+RUN add-apt-repository ppa:mc3man/trusty-media \
+&& apt-get update \
+&& apt-get install -y libssl-dev \
+&& apt-get install -y libcurl4-openssl-dev \
+&& apt-get install -y ffmpeg
+RUN pip install -r requirements.txt
+RUN chmod +x stylize.sh
