@@ -1,4 +1,5 @@
 import scipy.misc, numpy as np, os, sys
+import tensorflow as tf
 
 def save_img(out_path, img):
     img = np.clip(img, 0, 255).astype(np.uint8)
@@ -31,3 +32,15 @@ def list_files(in_path):
 
     return files
 
+def load_checkpoint(sess, checkpoint_dir):
+    saver = tf.train.Saver()
+    if os.path.isdir(checkpoint_dir):
+        ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
+        if ckpt and ckpt.model_checkpoint_path:
+            saver.restore(sess, ckpt.model_checkpoint_path)
+            return True
+        else:
+            return False
+    else:
+        saver.restore(sess, checkpoint_dir)
+        return True

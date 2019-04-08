@@ -3,7 +3,7 @@ import functools
 import vgg, pdb, time
 import tensorflow as tf, numpy as np, os
 import transform
-from utils import get_img
+from utils import get_img, load_checkpoint
 
 STYLE_LAYERS = ('relu1_1', 'relu2_1', 'relu3_1', 'relu4_1', 'relu5_1')
 CONTENT_LAYER = 'relu4_2'
@@ -91,16 +91,8 @@ def optimize(content_targets, style_target, content_weight, style_weight,
         train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss)
 
         # Load an existing checkpoint, if one exists
-        saver = tf.train.Saver()
-        didLoad = False
-        save_dir = "/".join(save_path.split("/")[:-1])
-        if os.path.isdir(save_dir):
-            ckpt = tf.train.get_checkpoint_state(save_dir)
-            if ckpt and ckpt.model_checkpoint_path:
-                saver.restore(sess, ckpt.model_checkpoint_path)
-                print("Loaded saved state")
-                didLoad = True
-        if not didLoad:
+        checkpoint_dir = "/".join(save_path.split("/")[:-1])
+        if not load_checkpoint(sess, checkpoint_dir):
             sess.run(tf.global_variables_initializer())
 
         import random

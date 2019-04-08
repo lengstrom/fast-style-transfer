@@ -4,7 +4,7 @@ sys.path.insert(0, 'src')
 import transform, numpy as np, vgg, pdb, os
 import scipy.misc
 import tensorflow as tf
-from utils import save_img, get_img, exists, list_files
+from utils import save_img, get_img, exists, list_files, load_checkpoint
 from argparse import ArgumentParser
 from collections import defaultdict
 import time
@@ -35,15 +35,8 @@ def ffwd_video(path_in, path_out, checkpoint_dir, device_t='/gpu:0', batch_size=
                                          name='img_placeholder')
 
         preds = transform.net(img_placeholder)
-        saver = tf.train.Saver()
-        if os.path.isdir(checkpoint_dir):
-            ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
-            if ckpt and ckpt.model_checkpoint_path:
-                saver.restore(sess, ckpt.model_checkpoint_path)
-            else:
-                raise Exception("No checkpoint found...")
-        else:
-            saver.restore(sess, checkpoint_dir)
+        if not load_checkpoint(sess, checkpoint_dir):
+            raise Exception("No checkpoint found...")
 
         X = np.zeros(batch_shape, dtype=np.float32)
 
@@ -91,15 +84,8 @@ def ffwd(data_in, paths_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):
                                          name='img_placeholder')
 
         preds = transform.net(img_placeholder)
-        saver = tf.train.Saver()
-        if os.path.isdir(checkpoint_dir):
-            ckpt = tf.train.get_checkpoint_state(checkpoint_dir)
-            if ckpt and ckpt.model_checkpoint_path:
-                saver.restore(sess, ckpt.model_checkpoint_path)
-            else:
-                raise Exception("No checkpoint found...")
-        else:
-            saver.restore(sess, checkpoint_dir)
+        if not load_checkpoint(sess, checkpoint_dir):
+            raise Exception("No checkpoint found...")
 
         num_iters = int(len(paths_out)/batch_size)
         for i in range(num_iters):
