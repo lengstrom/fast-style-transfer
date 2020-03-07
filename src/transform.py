@@ -30,7 +30,7 @@ def _conv_layer(net, num_filters, filter_size, strides, relu=True):
 def _conv_tranpose_layer(net, num_filters, filter_size, strides):
     weights_init = _conv_init_vars(net, num_filters, filter_size, transpose=True)
 
-    batch_size, rows, cols, in_channels = [i.value for i in net.get_shape()]
+    batch_size, rows, cols, in_channels = [i for i in net.get_shape()]
     new_rows, new_cols = int(rows * strides), int(cols * strides)
     # new_shape = #tf.pack([tf.shape(net)[0], new_rows, new_cols, num_filters])
 
@@ -47,9 +47,9 @@ def _residual_block(net, filter_size=3):
     return net + _conv_layer(tmp, 128, filter_size, 1, relu=False)
 
 def _instance_norm(net, train=True):
-    batch, rows, cols, channels = [i.value for i in net.get_shape()]
+    batch, rows, cols, channels = [i for i in net.get_shape()]
     var_shape = [channels]
-    mu, sigma_sq = tf.nn.moments(net, [1,2], keep_dims=True)
+    mu, sigma_sq = tf.nn.moments(net, [1,2], keepdims=True)
     shift = tf.Variable(tf.zeros(var_shape))
     scale = tf.Variable(tf.ones(var_shape))
     epsilon = 1e-3
@@ -57,11 +57,11 @@ def _instance_norm(net, train=True):
     return scale * normalized + shift
 
 def _conv_init_vars(net, out_channels, filter_size, transpose=False):
-    _, rows, cols, in_channels = [i.value for i in net.get_shape()]
+    _, rows, cols, in_channels = [i for i in net.get_shape()]
     if not transpose:
         weights_shape = [filter_size, filter_size, in_channels, out_channels]
     else:
         weights_shape = [filter_size, filter_size, out_channels, in_channels]
 
-    weights_init = tf.Variable(tf.truncated_normal(weights_shape, stddev=WEIGHTS_INIT_STDEV, seed=1), dtype=tf.float32)
+    weights_init = tf.Variable(tf.compat.v1.truncated_normal(weights_shape, stddev=WEIGHTS_INIT_STDEV, seed=1), dtype=tf.float32)
     return weights_init
