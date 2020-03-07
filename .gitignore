@@ -103,3 +103,9 @@ ENV/
 
 # checkpoint
 checkpoint
+
+# vscode
+.vscode
+
+# images
+images
