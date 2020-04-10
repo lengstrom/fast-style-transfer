@@ -28,8 +28,8 @@ def optimize(content_targets, style_target, content_weight, style_weight,
     print(style_shape)
 
     # precompute style features
-    with tf.Graph().as_default(), tf.device('/cpu:0'), tf.Session() as sess:
-        style_image = tf.placeholder(tf.float32, shape=style_shape, name='style_image')
+    with tf.Graph().as_default(), tf.device('/cpu:0'), tf.compat.v1.Session() as sess:
+        style_image = tf.compat.v1.placeholder(tf.float32, shape=style_shape, name='style_image')
         style_image_pre = vgg.preprocess(style_image)
         net = vgg.net(vgg_path, style_image_pre)
         style_pre = np.array([style_target])
@@ -39,8 +39,8 @@ def optimize(content_targets, style_target, content_weight, style_weight,
             gram = np.matmul(features.T, features) / features.size
             style_features[layer] = gram
 
-    with tf.Graph().as_default(), tf.Session() as sess:
-        X_content = tf.placeholder(tf.float32, shape=batch_shape, name="X_content")
+    with tf.Graph().as_default(), tf.compat.v1.Session() as sess:
+        X_content = tf.compat.v1.placeholder(tf.float32, shape=batch_shape, name="X_content")
         X_pre = vgg.preprocess(X_content)
 
         # precompute content features
@@ -50,7 +50,7 @@ def optimize(content_targets, style_target, content_weight, style_weight,
 
         if slow:
             preds = tf.Variable(
-                tf.random_normal(X_content.get_shape()) * 0.256
+                tf.random.normal(X_content.get_shape()) * 0.256
             )
             preds_pre = preds
         else:
@@ -68,10 +68,10 @@ def optimize(content_targets, style_target, content_weight, style_weight,
         style_losses = []
         for style_layer in STYLE_LAYERS:
             layer = net[style_layer]
-            bs, height, width, filters = map(lambda i:i.value,layer.get_shape())
+            bs, height, width, filters = map(lambda i:i,layer.get_shape())
             size = height * width * filters
             feats = tf.reshape(layer, (bs, height * width, filters))
-            feats_T = tf.transpose(feats, perm=[0,2,1])
+            feats_T = tf.transpose(a=feats, perm=[0,2,1])
             grams = tf.matmul(feats_T, feats) / size
             style_gram = style_features[style_layer]
             style_losses.append(2 * tf.nn.l2_loss(grams - style_gram)/style_gram.size)
@@ -88,8 +88,8 @@ def optimize(content_targets, style_target, content_weight, style_weight,
         loss = content_loss + style_loss + tv_loss
 
         # overall loss
-        train_step = tf.train.AdamOptimizer(learning_rate).minimize(loss)
-        sess.run(tf.global_variables_initializer())
+        train_step = tf.compat.v1.train.AdamOptimizer(learning_rate).minimize(loss)
+        sess.run(tf.compat.v1.global_variables_initializer())
         import random
         uid = random.randint(1, 100)
         print("UID: %s" % uid)
@@ -133,10 +133,10 @@ def optimize(content_targets, style_target, content_weight, style_weight,
                     if slow:
                        _preds = vgg.unprocess(_preds)
                     else:
-                       saver = tf.train.Saver()
+                       saver = tf.compat.v1.train.Saver()
                        res = saver.save(sess, save_path)
                     yield(_preds, losses, iterations, epoch)
 
 def _tensor_size(tensor):
     from operator import mul
-    return functools.reduce(mul, (d.value for d in tensor.get_shape()[1:]), 1)
+    return functools.reduce(mul, (d for d in tensor.get_shape()[1:]), 1)
