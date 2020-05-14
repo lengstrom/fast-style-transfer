@@ -55,7 +55,29 @@ We added styles from various paintings to a photo of Chicago. Click on thumbnail
 
 ## Implementation Details
 Our implementation uses TensorFlow to train a fast style transfer network. We use roughly the same transformation network as described in Johnson, except that batch normalization is replaced with Ulyanov's instance normalization, and the scaling/offset of the output `tanh` layer is slightly different. We use a loss function close to the one described in Gatys, using VGG19 instead of VGG16 and typically using "shallower" layers than in Johnson's implementation (e.g. we use `relu1_1` rather than `relu1_2`). Empirically, this results in larger scale style features in transformations.
-
+## Vitual Environment Setup (Anaconda) - Windows/Linux
+Tested on
+| Spec                        |                                                             |
+|-----------------------------|-------------------------------------------------------------|
+| Operating System            | Windows 10 Home                                             |
+| GPU                         | Nvidia GTX 2080 TI                                          |
+| CUDA Version                | 11.0                                                        |
+| Driver Version              | 445.75                                                      |
+### Step 1：Install Anaconda
+https://docs.anaconda.com/anaconda/install/
+### Step 2：Build a virtual environment
+Run the following commands in sequence in Anaconda Prompt:
+```
+conda create -n tf-gpu tensorflow-gpu=2.1.0
+conda activate tf-gpu
+conda install jupyterlab
+jupyter lab
+```
+Run the following command in the notebook or just conda install the package:
+```
+!pip install moviepy==1.0.2
+```
+Follow the commands below to use fast-style-transfer
 ## Documentation
 ### Training Style Transfer Networks
 Use `style.py` to train a new style transfer network. Run `python style.py` to view all the possible parameters. Training takes 4-6 hours on a Maxwell Titan X. [More detailed documentation here](docs.md#stylepy). **Before you run this, you should run `setup.sh`**. Example usage:
