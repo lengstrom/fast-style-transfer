@@ -96,6 +96,15 @@ def optimize(content_targets, style_target, content_weight, style_weight,
         # overall loss
         train_step = tf.compat.v1.train.AdamOptimizer(learning_rate).minimize(loss)
         sess.run(tf.compat.v1.global_variables_initializer())
+
+        # If there is an existing checkpoint, load it to continue optimizing
+        # TODO: use the style Hash in the checkpoint path to maintain a different checkpoints for each style.
+        saver = tf.compat.v1.train.Saver()
+        try:
+            saver.restore(sess, save_path)
+        except:
+            print("Starting optimization from scratch")
+
         import random
         uid = random.randint(1, 100)
         print("UID: %s" % uid)
@@ -139,7 +148,6 @@ def optimize(content_targets, style_target, content_weight, style_weight,
                     if slow:
                         _preds = src.vgg.unprocess(_preds)
                     else:
-                        saver = tf.compat.v1.train.Saver()
                         res = saver.save(sess, save_path)
                     yield (_preds, losses, iterations, epoch)
 
