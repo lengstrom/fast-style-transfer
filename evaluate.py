@@ -20,7 +20,7 @@ def ffwd_video(path_in, path_out, checkpoint_dir, device_t='/gpu:0', batch_size=
     video_clip = VideoFileClip(path_in, audio=False)
     video_writer = ffmpeg_writer.FFMPEG_VideoWriter(path_out, video_clip.size, video_clip.fps, codec="libx264",
                                                     preset="medium", bitrate="2000k",
-                                                    audiofile=path_in, threads=None,
+                                                    audiofile=None, threads=None,
                                                     ffmpeg_params=None)
 
     g = tf.Graph()
