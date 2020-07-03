@@ -28,6 +28,10 @@ def build_parser():
                         dest='checkpoint_dir', help='dir to save checkpoint in',
                         metavar='CHECKPOINT_DIR', required=True)
 
+    parser.add_argument('--checkpoint-restore', action='store_true',
+                        dest='checkpoint_restore', help='restore previous checkpoint to continue optimizing',
+                        default=False)
+
     parser.add_argument('--style', type=str,
                         dest='style', help='style image path',
                         metavar='STYLE', required=True)
@@ -129,7 +133,8 @@ def main():
         "print_iterations": options.checkpoint_iterations,
         "batch_size": options.batch_size,
         "save_path": os.path.join(options.checkpoint_dir, 'fns.ckpt'),
-        "learning_rate": options.learning_rate
+        "learning_rate": options.learning_rate,
+        "checkpoint_restore": options.checkpoint_restore
     }
 
     if options.slow:
