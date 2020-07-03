@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import functools
 import time
+import os
 
 import numpy as np
 import tensorflow as tf
@@ -19,7 +20,7 @@ DEVICES = 'CUDA_VISIBLE_DEVICES'
 def optimize(content_targets, style_target, content_weight, style_weight,
              tv_weight, vgg_path, epochs=2, print_iterations=1000,
              batch_size=4, save_path='saver/fns.ckpt', slow=False,
-             learning_rate=1e-3, debug=False):
+             learning_rate=1e-3, debug=False, checkpoint_restore=False):
     if slow:
         batch_size = 1
     mod = len(content_targets) % batch_size
@@ -98,10 +99,17 @@ def optimize(content_targets, style_target, content_weight, style_weight,
         sess.run(tf.compat.v1.global_variables_initializer())
 
         # If there is an existing checkpoint, load it to continue optimizing
-        # TODO: use the style Hash in the checkpoint path to maintain a different checkpoints for each style.
         saver = tf.compat.v1.train.Saver()
         try:
-            saver.restore(sess, save_path)
+            if checkpoint_restore:
+                if os.path.isdir(save_path):
+                    ckpt = tf.train.get_checkpoint_state(save_path)
+                    if ckpt and ckpt.model_checkpoint_path:
+                        saver.restore(sess, ckpt.model_checkpoint_path)
+                    else:
+                        raise Exception("No checkpoint found...")
+                else:
+                    saver.restore(sess, save_path)
         except:
             print("Starting optimization from scratch")
 
