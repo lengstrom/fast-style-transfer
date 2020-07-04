@@ -1,9 +1,11 @@
 from __future__ import print_function
 
 import os
+import tempfile
 from argparse import ArgumentParser
 from collections import defaultdict
 
+import moviepy.video.io.ffmpeg_tools as ffmpeg_tools
 import moviepy.video.io.ffmpeg_writer as ffmpeg_writer
 import numpy as np
 import tensorflow as tf
@@ -18,10 +20,23 @@ DEVICE = '/gpu:0'
 
 def ffwd_video(path_in, path_out, checkpoint_dir, device_t='/gpu:0', batch_size=4):
     video_clip = VideoFileClip(path_in, audio=False)
-    video_writer = ffmpeg_writer.FFMPEG_VideoWriter(path_out, video_clip.size, video_clip.fps, codec="libx264",
-                                                    preset="medium", bitrate="2000k",
-                                                    audiofile=None, threads=None,
-                                                    ffmpeg_params=None)
+
+    # Create a temporary file to store the audio.
+    fp = tempfile.NamedTemporaryFile(suffix='.aac')
+    temp_audio_file_name = fp.name
+    fp.close()
+
+    # Create a temporary file to store the video.
+    fp = tempfile.NamedTemporaryFile(suffix='.mp4')
+    temp_video_file_name = fp.name
+    fp.close()
+
+    # Extract the audio.
+    ffmpeg_tools.ffmpeg_extract_audio(path_in, temp_audio_file_name)
+
+    video_writer = ffmpeg_writer.FFMPEG_VideoWriter(temp_video_file_name, video_clip.size, video_clip.fps,
+                                                    codec="libx264", preset="medium", audiofile=None, threads=None,
+                                                    ffmpeg_params=["-b:v", "2000k"])
 
     g = tf.Graph()
     soft_config = tf.compat.v1.ConfigProto(allow_soft_placement=True)
@@ -64,6 +79,13 @@ def ffwd_video(path_in, path_out, checkpoint_dir, device_t='/gpu:0', batch_size=
             style_and_write(frame_count)
 
         video_writer.close()
+
+        # Merge audio and video
+        ffmpeg_tools.ffmpeg_merge_video_audio(temp_video_file_name, temp_audio_file_name, path_out)
+
+        # Delete temporary files
+        os.remove(temp_video_file_name)
+        os.remove(temp_audio_file_name)
 
 
 # get img_shape
