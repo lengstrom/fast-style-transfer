@@ -29,9 +29,7 @@ RUN curl https://1drv.ms/u/s!AlkXAYHD4YTwl8smmon3XYw_qhDWTQ?e=TP9DBc --output la
     curl https://1drv.ms/u/s!AlkXAYHD4YTwl8sn_3DKGXARqlzYtg?e=ERZJZF --output wreck.ckpt
 
 # clone the repository and setup python path
-RUN git clone https://github.com/thhuang/fast-style-transfer.git && \
-    cd fast-style-transfer && \
-    git reset --hard 57d473706d92759a68543f6392bb7cfcb0a9a35b
+RUN git clone https://github.com/thhuang/fast-style-transfer.git
 ENV PYTHONPATH /app/fast-style-transfer/src
 
 # default command
