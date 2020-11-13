@@ -55,7 +55,7 @@ We added styles from various paintings to a photo of Chicago. Click on thumbnail
 
 ## Implementation Details
 Our implementation uses TensorFlow to train a fast style transfer network. We use roughly the same transformation network as described in Johnson, except that batch normalization is replaced with Ulyanov's instance normalization, and the scaling/offset of the output `tanh` layer is slightly different. We use a loss function close to the one described in Gatys, using VGG19 instead of VGG16 and typically using "shallower" layers than in Johnson's implementation (e.g. we use `relu1_1` rather than `relu1_2`). Empirically, this results in larger scale style features in transformations.
-## Vitual Environment Setup (Anaconda) - Windows/Linux
+## Virtual Environment Setup (Anaconda) - Windows/Linux
 Tested on
 | Spec                        |                                                             |
 |-----------------------------|-------------------------------------------------------------|
