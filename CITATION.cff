@@ -1,8 +1,13 @@
-cff-version: 1.1.0
-message: "If you use this software, please cite it as below."
-authors:
-  - family-names: Engstrom
+# YAML 1.2
+---
+authors: 
+  -
+    family-names: Engstrom
     given-names: Logan
+cff-version: "1.1.0"
+date-released: 2016-10-31
+message: "If you use this software, please cite it using these metadata."
+repository-code: "https://github.com/lengstrom/fast-style-transfer"
 title: "Fast Style Transfer"
-year = 2016
-howpublished = "\url{https://github.com/lengstrom/fast-style-transfer/}"
+version: "1.0"
+...
