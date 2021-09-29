@@ -7,6 +7,12 @@ from argparse import ArgumentParser
 from utils import save_img, get_img, exists, list_files
 import evaluate
 
+#Uncomment lines 11-13 to limit GPU memory usage. 
+#physical_devices = tf.config.experimental.list_physical_devices('GPU') 
+#for physical_device in physical_devices: 
+    #tf.config.experimental.set_memory_growth(physical_device, True)
+
+
 CONTENT_WEIGHT = 7.5e0
 STYLE_WEIGHT = 1e2
 TV_WEIGHT = 2e2
