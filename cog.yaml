@@ -1,0 +1,11 @@
+build:
+  python_version: "3.7"
+  gpu: true
+  cuda: 11.0
+  python_packages:
+    - tensorflow-gpu==2.1.0
+    - moviepy==1.0.2
+    - imageio-ffmpeg==0.2.0
+  system_packages:
+    - ffmpeg
+predict: "predict.py:Predictor"
