@@ -135,8 +135,7 @@ def ffwd_different_dimensions(in_path, out_path, checkpoint_dir,
             device_t=DEVICE, batch_size=4):
     in_path_of_shape = defaultdict(list)
     out_path_of_shape = defaultdict(list)
-    for i in range(len(in_path)):
-        in_image = in_path[i]
+    for i, in_image in enumerate(in_path):
         out_image = out_path[i]
         shape = "%dx%dx%d" % get_img(in_image).shape
         in_path_of_shape[shape].append(in_image)
