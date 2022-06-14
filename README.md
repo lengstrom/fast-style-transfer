@@ -133,4 +133,4 @@ You will need the following to run the above:
 - The image of the Stata Center at the very beginning of the README was taken by [Juan Paulo](https://juanpaulo.me/)
 
 ### Related Work
-- Michael Ramos ported this network [to use CoreML on iOS](https://medium.com/@rambossa/diy-prisma-fast-style-transfer-app-with-coreml-and-tensorflow-817c3b90dacd)
+- [Michael Ramos](https://twitter.com/backnotprop) ported this network [to use CoreML on iOS](https://github.com/backnotprop/fast-style-transfer-coreml)
