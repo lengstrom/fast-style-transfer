@@ -1,4 +1,4 @@
-## style.py 
+## style.py
 
 `style.py` trains networks that can transfer styles from artwork into images.
 
